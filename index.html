@@ -2,15 +2,663 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тест</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ошибка, совершённая карандашом</title>
+    <script src="media.js"></script>
     <style>
-        body { background: #050507; color: #c084fc; font-family: monospace; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        button { background: #111115; color: white; border: 1px solid #6b21a8; padding: 15px 30px; font-size: 18px; border-radius: 6px; cursor: pointer; margin-top: 20px; }
+        * { -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+        body { margin: 0; padding: 0; background: #050507; color: #ffffff; font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; box-sizing: border-box; overflow: hidden; position: relative; }
+        #bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100vh; background-size: cover; background-position: center; transition: background-image 1s ease-in-out, filter 0.5s ease; z-index: 1; }
+        #menu-container, #extra-container { text-align: center; background: rgba(7, 7, 9, 0.96); padding: 30px; border: 2px solid #6b21a8; border-radius: 12px; box-shadow: 0 0 30px rgba(107, 33, 168, 0.4); width: 340px; z-index: 50; position: relative; max-height: 90vh; overflow-y: auto; display: none; }
+        #menu-container { display: block; }
+        h1, h2 { font-size: 20px; color: #c084fc; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px; line-height: 1.5; text-shadow: 0 0 10px rgba(192, 132, 252, 0.5); }
+        h2 { font-size: 16px; margin-top: 10px; margin-bottom: 15px; }
+        #game-container { display: none; width: 100%; height: 100vh; flex-direction: column; justify-content: flex-end; box-sizing: border-box; position: relative; z-index: 10; }
+        #chapter-title-screen { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100vh; background: #050507; z-index: 150; justify-content: center; align-items: center; cursor: pointer; text-align: center; padding: 20px; box-sizing: border-box; }
+        #chapter-title-text { font-size: 24px; color: #c084fc; text-transform: uppercase; letter-spacing: 3px; font-weight: bold; text-shadow: 0 0 15px rgba(192, 132, 252, 0.6); line-height: 1.6; }
+        #top-bar { position: fixed; top: 15px; right: 20px; display: flex; gap: 10px; z-index: 100; }
+        .save-btn { background: #111115 !important; border: 1px solid #4c1d95 !important; padding: 8px 16px !important; font-size: 14px !important; border-radius: 6px !important; text-shadow: none !important; color: white; cursor: pointer; transition: 0.3s; }
+        .save-btn:hover { background: #581c87 !important; border-color: #c084fc !important; box-shadow: 0 0 10px rgba(192, 132, 252, 0.4); }
+        #choices-overlay { width: 100%; padding: 0 25px; box-sizing: border-box; margin-bottom: 15px; z-index: 120; display: flex; flex-direction: column; gap: 12px; position: relative; }
+        #sprite-layer { position: absolute; bottom: 38vh; left: 50%; transform: translateX(-50%); width: 220px; height: 260px; z-index: 5; background-repeat: no-repeat; background-size: 660px 780px; display: none; pointer-events: none; }
+        #story-window { background: rgba(7, 7, 9, 0.96); padding: 25px; border-top: 4px solid #6b21a8; min-height: 38vh; box-shadow: 0 -10px 40px rgba(0,0,0,0.9); z-index: 110; display: flex; flex-direction: column; justify-content: space-between; width: 100%; box-sizing: border-box; cursor: pointer; position: relative; }
+        #speaker-name { font-size: 16px; color: #c084fc; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; font-weight: bold; text-shadow: 0 0 5px rgba(192, 132, 252, 0.3); }
+        #text { font-size: 18px; line-height: 1.6; margin-bottom: 20px; color: #e4e4e7; min-height: 4.5em; text-shadow: none !important; }
+        #click-hint { font-size: 12px; color: #a855f7; text-align: right; opacity: 0.6; margin-top: -10px; margin-bottom: 10px; animation: blink 1.5s infinite; }
+        .buttons-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+        button { background: #111115 !important; color: #f4f4f5 !important; border: 1px solid #4c1d95 !important; padding: 15px; font-size: 16px; border-radius: 6px; cursor: pointer; text-align: center; transition: all 0.3s ease; text-shadow: none !important; opacity: 1 !important; }
+        button:hover:not(:disabled) { background: #581c87 !important; border-color: #c084fc !important; transform: scale(1.02); box-shadow: 0 0 15px rgba(192, 132, 252, 0.4); }
+        button:disabled { background: #09090b !important; color: #52525b !important; border-color: #1c1917 !important; cursor: not-allowed; opacity: 0.3 !important; }
+        #choices-overlay button { text-align: left; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        #choices-overlay button:hover { transform: translateX(5px); }
+        .extra-section { background: #111115; border: 1px solid #4c1d95; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: left; }
+        .extra-section h3 { color: #c084fc; font-size: 14px; margin-top: 0; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .archive-text { font-size: 13px; line-height: 1.5; color: #d4d4d8; text-align: justify; display: none; margin-top: 10px; border-top: 1px dashed #4c1d95; padding-top: 10px; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+        .gallery-item { background: #09090b; border: 1px dashed #4c1d95; aspect-ratio: 1; display: flex; justify-content: center; align-items: center; font-size: 11px; color: #52525b; border-radius: 4px; text-align: center; padding: 5px; box-sizing: border-box; }
+        .unlocked { border-style: solid; border-color: #a855f7; color: #e4e4e7; background: #2e1065 !important; }
+        @keyframes blink { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.8; } }
+        #custom-alert { display: none; position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #111115; border: 2px solid #6b21a8; padding: 15px 30px; border-radius: 8px; box-shadow: 0 0 25px rgba(107, 33, 168, 0.8); z-index: 200; font-size: 15px; color: #c084fc; font-weight: bold; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0; }
+        #custom-alert.show { top: 20px; display: block; opacity: 1; }
     </style>
 </head>
 <body>
-    <h1>ОШИБКА, СОВЕРШЁННАЯ КАРАНДАШОМ</h1>
-    <button onclick="alert('Движок работает!')">ИГРАТЬ</button>
+    <div id="bg-layer"></div>
+    <div id="custom-alert">💾 Путь сохранён в памяти...</div>
+    <div id="menu-container">
+        <h1>Ошибка,<br>совершённая карандашом</h1>
+        <div class="buttons-list" id="menu-buttons"></div>
+    </div>
+    <div id="extra-container">
+        <h2>Режим ЭКСТРА</h2>
+        <div class="extra-section">
+            <h3>📂 Досье: Комплекс ПейнЙосев</h3>
+            <button id="archive-lock-btn" style="padding: 8px 12px; font-size: 12px; width: 100%;" disabled>🔒 Заблокировано</button>
+            <div id="archive-content" class="archive-text">
+                <strong>[ВЫРЕЗКА ИЗ СЕКРЕТНЫХ ОТЧЁТОВ]:</strong> Подземный комплекс научно-исследовательских аномалий изначально проектировался двумя независимыми группами учёных. Кодовое название <strong>«ПейнЙосев»</strong> никогда не расшифровывалось персоналу. <br><br>
+                Однако архивные метрики прямо указывают на скрытую связь с именами двух основательниц, чьи фамилии и отчества вплелись в саму ткань проекта: <strong>Pains Ева Йосевна</strong> и <strong>Uplands Акуран Кремовна</strong>. <br><br>
+                Организация создана на пересечении их личных вселенных, где советская сыворотка Uplands и порталы Pains образовали временной парадокс. Намёки ведут к их тёмному прошлому...
+            </div>
+        </div>
+        <div class="extra-section">
+            <h3>🎨 Галерея наработок</h3>
+            <div class="gallery-grid">
+                <div id="gallery-1" class="gallery-item">🔒<br>Основная концовка</div>
+                <div id="gallery-2" class="gallery-item">🔒<br>Альтернативная концовка</div>
+                <div id="gallery-3" class="gallery-item">🔒<br>Шуточная концовка</div>
+                <div id="gallery-4" class="gallery-item">🔒<br>Все руты Пейна</div>
+            </div>
+        </div>
+        <button style="border-color: #ef4444; width: 100%; padding: 12px;" onclick="exitExtraMenu()">🚪 Назад в меню</button>
+    </div>
+    <div id="game-container">
+        <div id="chapter-title-screen" onclick="hideChapterTitle()">
+            <div id="chapter-title-text"></div>
+        </div>
+        <div id="top-bar">
+            <button class="save-btn" onclick="saveCurrentGame(event)">💾 Сохранить</button>
+            <button class="save-btn" style="border-color: #ef4444" onclick="showMainMenu(event)">🚪 Меню</button>
+        </div>
+        <div id="choices-overlay" onclick="event.stopPropagation()"></div>
+        <div id="sprite-layer"></div>
+        <div id="story-window" onclick="advanceStory()">
+            <div>
+                <div id="speaker-name">Загрузка...</div>
+                <div id="text">...</div>
+            </div>
+            <div id="click-hint">▼ Нажмите на экран для продолжения</div>
+        </div>
+    </div>
+    <script>
+        const allChapters = {            1: {
+                title: "Глава 1:\nИстоки Парадокса",
+                dialogues: [
+                    { speaker: "Мысли Машрума", text: "Мне всего шесть лет... Я сижу на холодном полу пустого дома.", bg: visualAssets.backgrounds.room, sprite: visualAssets.sprites.mashrum_6, sX: 0, sY: 0 },
+                    { speaker: "Мысли Машрума", text: "Вокруг звенящая, пугающая тишина. Мою семью убил маньяк, и этот кошмар до сих пор стоит у меня перед глазами.", bg: visualAssets.backgrounds.room, sprite: visualAssets.sprites.mashrum_6, sX: 220, sY: 0 },
+                    { speaker: "Мысли Машрума", text: "В доме давно закончилась нормальная еда, я лениво доедаю последние чёрствые крошки.", bg: visualAssets.backgrounds.room, sprite: visualAssets.sprites.mashrum_6, sX: 440, sY: 0 },
+                    { speaker: "Мысли Машрума", text: "Моя единственная радость и единственный friend в этом пустом мире — маленький красный мячик.", bg: visualAssets.backgrounds.room, sprite: visualAssets.sprites.mashrum_6, sX: 0, sY: 260 },
+                    { speaker: "Машрум", text: "Мячик весело скачет по ободранным обоям...", bg: visualAssets.backgrounds.room, sprite: visualAssets.sprites.mashrum_6, sX: 220, sY: 260 },
+                    { speaker: "Машрум", text: "О нет! Я толкнул его слишком сильно! Он вылетает прямо в открытое разбитое окно!", bg: visualAssets.backgrounds.room, sprite: visualAssets.sprites.mashrum_6, sX: 440, sY: 260 },
+                    { speaker: "Автор", text: "Мяч с тихим стуком падает на грязный асфальт улицы.", bg: visualAssets.backgrounds.room },
+                    { speaker: "Автор", text: "Он залетает прямиком в открытый кузов странного, наглухо тонированного чёрного фургона, припаркованого у самого крыльца.", bg: visualAssets.backgrounds.room }
+                ],
+                forks: {
+                    type: "choice",
+                    choices: [
+                        { text: "Пойти за мячом в фургон", nextScene: "go_to_van" },
+                        { text: "Остаться дома пить чай (Секретная шутка)", nextScene: "joke_home" }
+                    ]
+                },
+                scenes: {
+                    "joke_home": {
+                        dialogues: [
+                            { speaker: "Машрум", text: "Да ну его, этот мяч. Пойду лучше налью себе горячего чайку, найду сушек на кухне. Дома сидеть безопаснее.", bg: visualAssets.backgrounds.room, sprite: visualAssets.sprites.mashrum_6, sX: 0, sY: 520 },
+                            { speaker: "Автор", text: "Вдруг стены старого дома начинают дико потеть и искажаться. Сама ткань реальности вокруг тебя с треском рвётся в клочья.", bg: visualAssets.backgrounds.room, effect: "void" },
+                            { speaker: "???", text: "Эй! Слышь, пацан! Ты сейчас натурально сломал весь сюжет! Какой, к чёрту, чай с сушками?!", bg: visualAssets.backgrounds.void, effect: "darkness" },
+                            { speaker: "Тьма из Будущего", text: "Я ради этой истории стёр свой собственный изначальный таймлайн и полностью растворился в небытии, чтобы дать тебе шанс, а ты сидишь тут и чаёвничаешь?! Ну-ка быстро марш в фургон!", bg: visualAssets.backgrounds.void, effect: "darkness" },
+                            { speaker: "Автор", text: "Огромная, поглощающая свет чёрная рука хватает испуганного Машрума за шкирку.", bg: visualAssets.backgrounds.room },
+                            { speaker: "Автор", text: "Она швыряет его через оконную раму прямо в кузов фургона и с грохотом блокирует тяжёлые двери. Сюжет насильно возвращается в каноничное русло.", bg: visualAssets.backgrounds.room }
+                        ],
+                        forks: { type: "next", nextScene: "inside_van_story", flagToSet: "joke_home_done" }
+                    },                    "go_to_van": {
+                        dialogues: [
+                            { speaker: "Машрум", text: "Я должен... должен вернуть свой мячик. Нельзя его там оставлять, это всё, что у меня осталось от прошлой жизни.", bg: visualAssets.backgrounds.room, sprite: visualAssets.sprites.mashrum_6, sX: 220, sY: 520 },
+                            { speaker: "Автор", text: "Ты на цыпочках подбегаешь к машине, аккуратно запрыгиваешь в тёмный кузов и находишь в углу свой мяч.", bg: visualAssets.backgrounds.room },
+                            { speaker: "Автор", text: "В этот же миг железные двери с грохотом закрываются снаружи. Фургон резко срывается с места.", bg: visualAssets.backgrounds.room }
+                        ],
+                        forks: { type: "next", nextScene: "inside_van_story" }
+                    },
+                    "inside_van_story": {
+                        dialogues: [
+                            { speaker: "Автор", text: "После долгой и безмолвной поездки фургон останавливается.", bg: visualAssets.backgrounds.complex },
+                            { speaker: "Автор", text: "Тебя выводят в колоссальное подземное здание, уходящее этажами вниз — секретный научно-исследовательский комплекс ПейнЙосев.", bg: visualAssets.backgrounds.complex },
+                            { speaker: "Автор", text: "Внутри комплекса бушует паника. Тревожные сирены оглушительно воют, аварийное освещение мигает красным.", bg: visualAssets.backgrounds.complex },
+                            { speaker: "Автор", text: "Все камеры наблюдения намертво отключены. Учёные и охрана мечутся в ужасе.", bg: visualAssets.backgrounds.complex },
+                            { speaker: "Мысли Машрума", text: "Мне страшно... Но прямо передо мной в полумраке загораются маленькие, ласково сияющие фиолетовые светяшки.", bg: visualAssets.backgrounds.complex, sprite: visualAssets.sprites.mashrum_6, sX: 440, sY: 520 },
+                            { speaker: "Мысли Машрума", text: "Они плавно плывут вперёд, словно зовут меня за собой.", bg: visualAssets.backgrounds.complex, sprite: visualAssets.sprites.mashrum_6, sX: 440, sY: 520 },
+                            { speaker: "Автор", text: "Следуя за огоньками по пустым тёмным переходам, ты заходишь в глубокий кабинет. Светяшки замирают над большим столом.", bg: visualAssets.backgrounds.complex },
+                            { speaker: "Мысли Машрума", text: "На столе лежит необычный, идеально заточенный карандаш. От него исходит мощная, гипнотическая энергия.", bg: visualAssets.backgrounds.complex, sprite: visualAssets.sprites.mashrum_6, sX: 0, sY: 0 },
+                            { speaker: "Мысли Машрума", text: "Я беру его, нахожу чистый лист бумаги и начинаю выводить контуры своего бесконечного одиночества.", bg: visualAssets.backgrounds.complex, sprite: visualAssets.sprites.mashrum_6, sX: 220, sY: 0 },
+                            { speaker: "Автор", text: "Маленький мальчик выводит на бумаге контуры густой тьмы.", bg: visualAssets.backgrounds.void, effect: "darkness" },
+                            { speaker: "Автор", text: "Как только рисунок завершён, лист начинает стремительно чернеть, поглощая свет. Из бумаги медленно поднимается объёмная фигура Тьмы с белыми кругами глаз.", bg: visualAssets.backgrounds.void, effect: "darkness" },
+                            { speaker: "Тьма", text: "В этот самый миг Тьма из будущего передаёт этому новорождённому существу все свои колоссальные знания и силу... И сам навсегда стирается из таймлайна.", bg: visualAssets.backgrounds.void, effect: "darkness" },
+                            { speaker: "Тьма", text: "Не бойся меня, Машрум. Я — твоё одиночество, и я защищу тебя от этого мира. Дай мне свою руку, нам пора уходить.", bg: visualAssets.backgrounds.void, effect: "darkness", sprite: visualAssets.sprites.darkness, sX: 0, sY: 0 },
+                            { speaker: "Автор", text: "Тьма аккуратно забирает магический карандаш ПейнЙосев, крепко берёт испуганного Машрума за ладонь и переносит прочь из комплекса.", bg: visualAssets.backgrounds.void }
+                        ],
+                        forks: { type: "finish", nextChapter: 2 }
+                    }
+                }
+            },            2: {
+                title: "Глава 2:\nОдиночество и Пейн",
+                dialogues: [
+                    { speaker: "Автор", text: "Машруму исполнилось десять лет. Наступает роковой момент.", bg: visualAssets.backgrounds.room },
+                    { speaker: "Автор", text: "Тьма понимает, что его долгое присутствие рядом может разорвать нити времени. Выполняя законы таймлайна, он молча уходит бродить по мультивселенной.", bg: visualAssets.backgrounds.void, effect: "darkness" },
+                    { speaker: "Автор", text: "Но перед самым своим исчезновением Тьма незаметно передаёт Машруму крошечную частицу своей первородной силы. Парень даже не подозревает, какой космический груз теперь спит внутри него.", bg: visualAssets.backgrounds.void, effect: "darkness" },
+                    { speaker: "Мысли Машрума", text: "Я снова остался один... Совсем один в этом огромном пустом доме. Тоска просто сжирает меня изнутри.", bg: visualAssets.backgrounds.room, sprite: visualAssets.sprites.mashrum_10, sX: 0, sY: 0 },
+                    { speaker: "Мысли Машрума", text: "Но у меня всё ещё лежит тот самый аномальный магический карандаш. Я больше не могу терпеть это одиночество. Я нарисую себе друга!", bg: visualAssets.backgrounds.room, sprite: visualAssets.sprites.mashrum_10, sX: 220, sY: 0 },
+                    { speaker: "Автор", text: "В десять лет Машрум выводит линии на бумаге. Из-под грифеля появляются контуры дерзкого мальчишки. Магия срабатывает мгновенно — рисунок оживает. Его зовут Пейн.", bg: visualAssets.backgrounds.room, sprite: visualAssets.sprites.mashrum_10, sX: 0, sY: 260 },
+                    { speaker: "Автор", text: "Машрум срисовал друга буквально со своего старого стиля: чёрная рубашка настежь, цепи и джинсы. Следующие пять лет парни живут душа в душу.", bg: visualAssets.backgrounds.room, sprite: visualAssets.sprites.pain_10, sX: 0, sY: 0 },
+                    { speaker: "Автор", text: "Ближе к пятнадцати годам Машрум решает полностью изменить свою жизнь. Кое-как наскребя денег, он покупает себе новую одежду — простую белую футболку и синие джинсы.", bg: visualAssets.backgrounds.room, sprite: visualAssets.sprites.mashrum_15, sX: 0, sY: 0 },
+                    { speaker: "Автор", text: "Пейн же, будучи ожившим рисунком, наотрез отказывается менять стиль, навсегда застывая в старой чёрной рубашке.", bg: visualAssets.backgrounds.room, sprite: visualAssets.sprites.pain_10, sX: 220, sY: 0 },
+                    { speaker: "Автор", text: "Всё рушится в один миг, когда в теле Пейна резко пробуждается его собственная аномальная пространственная мощь фиолетового пламени.", bg: visualAssets.backgrounds.room, effect: "portal" },
+                    { speaker: "Пейн", text: "Машрум, смотри! Мои руки... я буквально чувствую, как пространство рвётся по моему щелчку! Мои цепи звенят от этой энергии!", bg: visualAssets.backgrounds.room, effect: "portal", sprite: visualAssets.sprites.pain_15, sX: 0, sY: 0 },
+                    { speaker: "Пейн", text: "Я могу открывать пространственные порталы в другие миры! В этой унылой вселенной нам ловить нечего. Погнали со мной!", bg: visualAssets.backgrounds.room, effect: "portal", sprite: visualAssets.sprites.pain_15, sX: 220, sY: 0 },
+                    { speaker: "Машрум", text: "Нет... Пейн, остановись, я умоляю тебя! Пожалуйста, не надо никуда уходить! Нам же было хорошо вдвоём! Не бросай меня!", bg: visualAssets.backgrounds.room, sprite: visualAssets.sprites.mashrum_15, sX: 0, sY: 260 },
+                    { speaker: "Пейн", text: "Мне тошно смотреть на твои слезы, Машрум. Я не собираюсь всю жизнь гнить в этой дыре только ради того, чтобы тебе не было одиноко. Я хочу свободы.", bg: visualAssets.backgrounds.room, sprite: visualAssets.sprites.pain_15, sX: 440, sY: 0 },
+                    { speaker: "Автор", text: "Пейн со злостью вскидывает руку, открывает сияющий фиолетовый разлом и уходит, бросая друга. Портал со свистом захлопывается.", bg: visualAssets.backgrounds.room },
+                    { speaker: "Автор", text: "Машрум остаётся лежать на полу пустой комнаты в абсолютном одиночестве. Шли годы...", bg: visualAssets.backgrounds.room },
+                    { speaker: "Автор", text: "Только ближе к шестнадцати годам Машрум обнаруживает внутри себя скрытую силу, оставленную Тьмой. Вокруг его рук пляшут пространственные глитчи. Теперь ему 17, и эта сила ведёт его к роковой встрече.", bg: visualAssets.backgrounds.void, sprite: visualAssets.sprites.mashrum_17, sX: 0, sY: 0 }
+                ],
+                forks: { type: "finish", nextChapter: 3 }
+            },            3: {
+                title: "Глава 3:\nПуть Пейна и Слияние",
+                dialogues: [
+                    { speaker: "Автор", text: "Пока на Земле во вселенной Машрума проходит всего 2 года, Пейн в чужих мирах из-за разницы во времени успевает прожить целых 13 лет. К 28 годам он становится самым жестоким мафиози в мультивселенной, купаясь в роскоши и крови.", bg: visualAssets.backgrounds.hell },
+                    { speaker: "Автор", text: "Он носит стильный чёрный плащ, голубые джинсы и футболку со странными надписями, а его голова окончательно приняла форму алого спелого яблока с зелёным листком. Но роскошная жизнь обрывается внезапно — Пейн погибает от передозировки. Его чёрная душа падает на самое дно Ада.", bg: visualAssets.backgrounds.hell },
+                    { speaker: "Пейн", text: "Где это я?.. Вокруг только лава, кости и крики. Это что, Ад? Хех, они думали, что я буду здесь мучиться? Я сам устрою здесь свои правила! Я ведь Пейн, я рождён из боли и питаюсь ею!", bg: visualAssets.backgrounds.hell, effect: "hell", sprite: visualAssets.sprites.pain_demon, sX: 0, sY: 0 },
+                    { speaker: "Автор", text: "Пейн оказывается на удивление слабым демоном, но его гордыня никуда не делась. Чтобы выжить, он начинает свою скрытную, кровавую жатву.", bg: visualAssets.backgrounds.hell, effect: "hell" },
+                    { speaker: "Автор", text: "Пока никто не видит, он заманивает местных демонов в тёмные углы Преисподней, безжалостно режет их одного за другим и поглощает их силу.", bg: visualAssets.backgrounds.hell, effect: "hell", sprite: visualAssets.sprites.pain_demon, sX: 220, sY: 0 },
+                    { speaker: "Автор", text: "Вскоре его дерзкий стиль и стремительно растущую мощь замечает сам Люцифер — Владыка Ада.", bg: visualAssets.backgrounds.hell, effect: "hell" },
+                    { speaker: "Люцифер", text: "В тебе есть потенциал, наглый червец. Твоя связь с болью уникальна. Стань моим личным учеником, и я научу тебя истинной дьявольской власти.", bg: visualAssets.backgrounds.hell, effect: "hell" },
+                    { speaker: "Пейн", text: "О, великий Владыка, это огромная честь для меня! Я согласен. Я буду преданно учиться у тебя всему.", bg: visualAssets.backgrounds.hell, effect: "hell", sprite: visualAssets.sprites.pain_demon, sX: 0, sY: 260 },
+                    { speaker: "Мысли Пейна", text: "Этот старый дурак думает, что я буду ему прислуживать? Какая глупость. Я соглашусь только для того, чтобы подобраться к нему вплотную.", bg: visualAssets.backgrounds.hell, effect: "hell", sprite: visualAssets.sprites.pain_demon, sX: 220, sY: 260 },
+                    { speaker: "Автор", text: "Начинаются долгие, изнурительные годы обучения под надзором Люцифера. Пейн мастерски разыгрывает роль верного слуги.", bg: visualAssets.backgrounds.hell, effect: "hell" },
+                    { speaker: "Автор", text: "Но за спиной учителя его жажда власти только растёт. Ночами он продолжает вырезать элитную гвардию демонов, впитывая их тёмную ауру.", bg: visualAssets.backgrounds.hell, effect: "hell" },
+                    { speaker: "Автор", text: "Более того, во время тренировочных спаррингов с Люцифером Пейн находит способ незаметно, по крошечной капле, высасывать дьявольскую силу из самого Владыки Ада.", bg: visualAssets.backgrounds.hell, effect: "hell" },
+                    { speaker: "Автор", text: "И вот, спустя годы тайного сбора мощи, Пейн наконец чувствует, что накопленная им сила боли готова взорвать этот мир.", bg: visualAssets.backgrounds.hell, effect: "hell" }
+                ],
+                forks: { type: "next", nextScene: "main_story_end" },                scenes: {
+                    "main_story_end": {
+                        dialogues: [
+                            { speaker: "Автор", text: "Выбрав момент, Пейн с безумной ухмылкой вонзает свои когти в Люцифера, с корнем выкачивая огромный пласт дьявольской энергии!", bg: visualAssets.backgrounds.hell, effect: "hell", sprite: visualAssets.sprites.pain_demon, sX: 440, sY: 0 },
+                            { speaker: "Люцифер", text: "А-а-а-ах ты подлая тварь! Ты лгал мне?! Уничтожить предателя! Разорвать его на куски!", bg: visualAssets.backgrounds.hell, effect: "hell" },
+                            { speaker: "Пейн", text: "Чёрт, их слишком много! Вся армия Ада поднялась по тревоге! Надо срочно валить!", bg: visualAssets.backgrounds.hell, effect: "hell", sprite: visualAssets.sprites.pain_demon, sX: 440, sY: 260 },
+                            { speaker: "Автор", text: "В панике Пейн вслепую прыгает в первый попавшийся пространственный разлом.", bg: visualAssets.backgrounds.hell },
+                            { speaker: "Автор", text: "Багровый портал открывается под потолком советской лаборатории, и Пейн на огромной скорости вылетает наружу.", bg: visualAssets.backgrounds.lab },
+                            { speaker: "Автор", text: "Он со всего размаху сбивает с ног учёного Аплена. Стеклянная колба в руках Аплена разлетается вдребезги.", bg: visualAssets.backgrounds.lab },
+                            { speaker: "Автор", text: "Секретная яблочная сыворотка Акуран Кремовны проливается, густой шипящей лужей заливая их обоих.", bg: visualAssets.backgrounds.lab },
+                            { speaker: "Автор", text: "Химическая реакция с силой Ада начинает буквально растворять и плавить физическое тело Пейна.", bg: visualAssets.backgrounds.lab },
+                            { speaker: "Пейн", text: "А-а-а-аргх! Моё тело... Моя плоть горит в этой проклятой жиже! Я распадаюсь на атомы!", bg: visualAssets.backgrounds.lab, sprite: visualAssets.sprites.pain_demon, sX: 0, sY: 520 },
+                            { speaker: "Автор", text: "Умирая от боли, Пейн пытается перенестись, но вместо этого его душа случайно всасывается прямо внутрь Аплена!", bg: visualAssets.backgrounds.lab },
+                            { speaker: "Автор", text: "Сыворотка блокирует обратный процесс. Пейн навсегда остаётся заперт внутри тела Аплена. Начинается ментальная борьба за контроль.", bg: visualAssets.backgrounds.lab }
+                        ],
+                        forks: {
+                            type: "choice",
+                            choices: [
+                                { text: "Аплен удерживает контроль (Обычный путь)", nextScene: "route_normal" },
+                                { text: "Пейн полностью захватывает тело (Скрытый рут)", nextScene: "route_pain_control" }
+                            ]
+                        }
+                    },
+                    "route_normal": {
+                        dialogues: [
+                            { speaker: "Автор", text: "Аплен находит в себе силы подавить ярость демона внутри своего разума, оставляя Пейна на вторых ролях.", bg: visualAssets.backgrounds.lab, sprite: visualAssets.sprites.aplane_man, sX: 0, sY: 0 },
+                            { speaker: "Автор", text: "Но в этот же миг, почувствовав мощнейший всплеск энергии, в Аплена незаметно для них обоих вселяется Тьма.", bg: visualAssets.backgrounds.void, effect: "darkness" },
+                            { speaker: "Мысли Пейна", text: "Что это за жуткое присутствие?.. Абсолютно чёрный силуэт с белыми кругами вместо глаз... Ему миллиарды лет! Пускай спит, пока мы целы.", bg: visualAssets.backgrounds.lab, sprite: visualAssets.sprites.pain_demon, sX: 220, sY: 520 }
+                        ],
+                        forks: { type: "finish", nextChapter: 4 }
+                    },
+                    "route_pain_control": {
+                        dialogues: [
+                            { speaker: "Автор", text: "Ярость Демона Боли оказывается сильнее. Пейн подчиняет себе его физическое тело!", bg: visualAssets.backgrounds.lab, effect: "portal", sprite: visualAssets.sprites.aplane_man, sX: 220, sY: 0 },
+                            { speaker: "Пейн (В теле Аплена)", text: "А-ха-ха-ха! Какое послушное тело! Твои зелёные глаза теперь смотрят на мир моей жаждой крови!", bg: visualAssets.backgrounds.lab, effect: "portal", sprite: visualAssets.sprites.aplane_apple, sX: 0, sY: 0 },
+                            { speaker: "Автор", text: "Но в этот же миг в тело Аплена незаметно вселяется Тьма и погружается внутри них в глубокий сон.", bg: visualAssets.backgrounds.void, effect: "darkness" },
+                            { speaker: "Мысли Пейна", text: "Что это?! Рядом со мной в разуме лёг спать КТО-ТО... От него пахнет триллионами лет! Буду молчать, чтобы не разбудить чудовище.", bg: visualAssets.backgrounds.lab, sprite: visualAssets.sprites.pain_demon, sX: 220, sY: 520 }
+                        ],
+                        forks: { type: "finish", nextChapter: 4, flagToSet: "alt_route_ch2_ch3" }
+                    }
+                }
+            },            4: {
+                title: "Глава 4:\nБорьба и Перерождение",
+                dialogues: [
+                    { speaker: "Автор", text: "С момента слияния в лаборатории прошло долгих 102 года. Из-за разницы во времени общий возраст в одном теле достиг 1135 лет.", bg: visualAssets.backgrounds.lab }
+                ],
+                forks: { type: "check_flag_route", flag: "alt_route_ch2_ch3", normalScene: "normal_start", altScene: "pain_start" },
+                scenes: {
+                    "normal_start": {
+                        dialogues: [
+                            { speaker: "Автор", text: "Чтобы удержать демона, учёный конструирует уникальную маску с рожками, шрамами и безумной ухмылкой.", bg: visualAssets.backgrounds.lab },
+                            { speaker: "Автор", text: "У них общая память, Аплен знает о Пейне всё. Но когда Пейн перехватывает верх, маска врастает в плоть, а тело наливается алым цветом.", bg: visualAssets.backgrounds.lab, effect: "aplane", sprite: visualAssets.sprites.aplane_apple, sX: 0, sY: 0 },
+                            { speaker: "Аплен", text: "Мы возвращаемся на Землю. Я должен найти создателя этого безумного карандаша. Паренька по имени Машрум.", bg: visualAssets.backgrounds.lab, effect: "aplane", sprite: visualAssets.sprites.aplane_apple_v2, sX: 0, sY: 0 },
+                            { speaker: "Автор", text: "Аплен совершает прыжок. В одной точке реальности сталкиваются все: 17-летний оригинальный Машрум и Аплен. Реальность дико глитчит.", bg: visualAssets.backgrounds.void }
+                        ],
+                        forks: { type: "next_in_chapter", nextScene: "tma_awakens" }
+                    },
+                    "pain_start": {
+                        dialogues: [
+                            { speaker: "Пейн (В теле Аплена)", text: "Какая к чёрту маска?! Я сжёг её дотла! Это тело теперь полностью принадлежит мне! Мои цепи звенят от дьявольского триумфа!", bg: visualAssets.backgrounds.lab, effect: "portal", sprite: visualAssets.sprites.aplane_apple, sX: 220, sY: 0 },
+                            { speaker: "Пейн (В теле Аплена)", text: "Я открываю портал на Землю, чтобы показать Машруму, кем стал его оживший детский рисунок!", bg: visualAssets.backgrounds.lab, effect: "portal", sprite: visualAssets.sprites.aplane_apple_v2, sX: 220, sY: 0 },
+                            { speaker: "Автор", text: "Пейн совершает прыжок. Реальность рвётся с треском. 17-летний Машрум с ужасом видит перед собой алого Пейна.", bg: visualAssets.backgrounds.void }
+                        ],
+                        forks: { type: "next_in_chapter", nextScene: "tma_awakens" }
+                    },
+                    "tma_awakens": {
+                        dialogues: [
+                            { speaker: "Автор", text: "В этот миг Тьма открывает свои белые круги глаз внутри разума. Он выходит наружу.", bg: visualAssets.backgrounds.void, effect: "darkness" },
+                            { speaker: "Автор", text: "Пейн сжимается в животном ужасе, чувствуя его первородную миллиардолетнюю силу. Реальность рвётся, обнажая космическую пустоту.", bg: visualAssets.backgrounds.void, effect: "void", sprite: visualAssets.sprites.darkness, sX: 0, sY: 0 }
+                        ],
+                        forks: { type: "check_flag_final_choices", flag: "alt_route_ch2_ch3" }
+                    },                    "normal_choices": {
+                        dialogues: [
+                            { speaker: "Тьма", text: "Таймлайн разрушен до основания, Машрум... Ошибка, совершённая твоим магическим карандашом в шесть лет, заразила парадоксами всё живое.", bg: visualAssets.backgrounds.void, effect: "void", sprite: visualAssets.sprites.darkness, sX: 0, sY: 0 }
+                        ],
+                        forks: {
+                            type: "choice",
+                            choices: [
+                                { text: "Выслушать монолог Тьмы (Основной путь)", nextScene: "main_monologue" },
+                                { text: "Сорвать маску с Аплэна (Альтернативный путь)", nextScene: "alt_mask" },
+                                { text: "Попросить у Тьмы яблоко (Шуточный путь)", nextScene: "apple_joke" }
+                            ]
+                        }
+                    },
+                    "pain_choices": {
+                        dialogues: [
+                            { speaker: "Тьма", text: "Ты зашёл слишком далеко, Демон Боли... Ты полностью поглотил Аплэна. Машрум создал тебя из своего одиночества, но ты стал его погибелью.", bg: visualAssets.backgrounds.void, effect: "void", sprite: visualAssets.sprites.darkness, sX: 0, sY: 0 }
+                        ],
+                        forks: {
+                            type: "choice",
+                            choices: [
+                                { text: "Принять абсолютное стирание Пейна", nextScene: "pain_erase_ending" },
+                                { text: "Атаковать Тьму силой Ада (Секретный финал)", nextScene: "pain_god_ending" }
+                            ]
+                        }
+                    },
+                    "main_monologue": {
+                        dialogues: [
+                            { speaker: "Тьма", text: "Мне миллиарды, триллионы лет. Я вне времени. И чтобы спасти тебя, своего создателя, я СТИРАЮ ВСЮ ОСНОВНУЮ МУЛЬТИВСЕЛЕННУЮ И ПЕРЕРОЖДАЮ ЕЁ ЗАНОВО.", bg: visualAssets.backgrounds.void, effect: "void", sprite: visualAssets.sprites.darkness, sX: 0, sY: 0 },
+                            { speaker: "Автор", text: "Вселенная взрывается ослепительной чистой энергией, пересобирая атомы миров в новый таймлайн, где парадокс наконец исцелён.", bg: visualAssets.backgrounds.void, effect: "void" },
+                            { speaker: "Система", text: "ОСНОВНАЯ КОНЦОВКА: Мультивселенная перерождена с чистого листа. Ошибка карандаша исправлена ценой старого мира.", bg: visualAssets.backgrounds.void }
+                        ],
+                        forks: { type: "finish_game", endingUnlocked: "ending_1" }
+                    },                    "alt_mask": {
+                        dialogues: [
+                            { speaker: "Автор", text: "17-летний Машрум в глитчах паники бросается вперёд и сдёргивает маску с лица Аплэна.", bg: visualAssets.backgrounds.void, effect: "portal" },
+                            { speaker: "Пейн", text: "А-ха-ха-ха! Свобода! Машрум, твой карандаш никогда не создавал нас из ничего. Он просто вырывал самые тёмные куски из твоей собственной души! Я — это ты!", bg: visualAssets.backgrounds.void, effect: "hell", sprite: visualAssets.sprites.pain_demon, sX: 0, sY: 0 },
+                            { speaker: "Автор", text: "Пейн с катаной в руках подчиняет себе всю энергию Тьмы и скрывается в порталах, становясь верховным богом хаоса.", bg: visualAssets.backgrounds.void, effect: "hell" },
+                            { speaker: "Система", text: "АЛЬТЕРНАТИВНАЯ КОНЦОВКА: Истинная природа карандаша раскрыта. Пейн на свободе, а мультивселенная обречена на вечную войну боли.", bg: visualAssets.backgrounds.void }
+                        ],
+                        forks: { type: "finish_game", endingUnlocked: "ending_2" }
+                    },
+                    "apple_joke": {
+                        dialogues: [
+                            { speaker: "Машрум", text: "Слушай, Тьма, раз уж мы все сейчас исчезнем, угости на прощание яблочком? У Аплэна на голове как раз свежий зелёный листик растёт.", bg: visualAssets.backgrounds.void, sprite: visualAssets.sprites.mashrum_17, sX: 220, sY: 0 },
+                            { speaker: "Тьма", text: "Ты... Серьёзно? Из-за того, что я спал в теле Аплэна, пропитанном яблочной сывороткой... твоя глупая просьба сбила мои ментальные настройки. Я промахнулся с перерождением.", bg: visualAssets.backgrounds.void, effect: "void", sprite: visualAssets.sprites.darkness, sX: 0, sY: 260 },
+                            { speaker: "Автор", text: "Пространство заливает розовая чиби-вспышка. Вся мультивселенная мгновенно превращается в один бесконечный мирный яблоневый сад.", bg: visualAssets.backgrounds.garden },
+                            { speaker: "Гусеница-Тьма", text: "Ну супер, блядь. Теперь я говорящая розовая гусеница с большими милыми глазами. Машрум, передай гречку, сюжет сломан. Я ухожу.", bg: visualAssets.backgrounds.garden, sprite: visualAssets.sprites.darkness_caterpillar, sX: 0, sY: 0 },
+                            { speaker: "Система", text: "ШУТОЧНАЯ КОНЦОВКА: Все сыты, парадоксы исчезли, а триллионолетний Тьма теперь очень недоволен своим новым розовым чиби-телом. Конец!", bg: visualAssets.backgrounds.garden }
+                        ],
+                        forks: { type: "finish_game", endingUnlocked: "ending_3" }
+                    },
+                    "pain_erase_ending": {
+                        dialogues: [
+                            { speaker: "Пейн", text: "Что ж... Я проиграл. Это тело разрушается, а пустота Тьмы сжирает мои порталы. Прости меня, Машрум... Я просто не хотел снова возвращаться в тот пустой рисунок.", bg: visualAssets.backgrounds.void, effect: "void", sprite: visualAssets.sprites.pain_demon, sX: 0, sY: 520 },
+                            { speaker: "Автор", text: "Тьма полностью поглощает Пейна, стирая его код из мультивселенной, возвращая Машруму его украденную душу.", bg: visualAssets.backgrounds.void, effect: "void" },
+                            { speaker: "Система", text: "СЕКРЕТНЫЙ РУТ ПЕЙНА: КОНЦОВКА ТРАГЕДИИ. Пейн стёрт, парадокс решён, но Машрум навсегда лишился части своей души.", bg: visualAssets.backgrounds.void }
+                        ],
+                        forks: { type: "finish_game", endingUnlocked: "ending_4" }
+                    },
+                    "pain_god_ending": {
+                        dialogues: [
+                            { speaker: "Пейн", text: "Умереть здесь?! Ну уж нет! Вся дьявольская сила Люцифера, все кровавые реки Ада — ПОДНИМИТЕСЬ ПО МОЕМУ КЛИКУ! Я разорву саму бесконечность Тьмы!", bg: visualAssets.backgrounds.void, effect: "hell", sprite: visualAssets.sprites.pain_demon, sX: 0, sY: 0 },
+                            { speaker: "Автор", text: "Красные вспышки боли Пейна сталкиваются с абсолютным войдом Тьмы. Происходит великий раскол, разделяющий мультивселенную на бесконечные осколки.", bg: visualAssets.backgrounds.void, effect: "portal" },
+                            { speaker: "Система", text: "СЕКРЕТНЫЙ РУТ ПЕЙНА: КОНЦОВКА БОГА ХАОСА. Пейн расколол Тьму и стал правителем бесконечных осколков разорванного времени.", bg: visualAssets.backgrounds.void }
+                        ],
+                        forks: { type: "finish_game", endingUnlocked: "ending_5" }
+                    }
+                }
+            }
+        };        let currentChapter = 1;
+        let currentDialogueIndex = 0;
+        let inSubScene = false;
+        let currentSubSceneKey = "";
+        let currentTimeout;
+        let isTyping = false;
+        let textToType = "";
+
+        if (!localStorage.getItem("unlocked_chapter_2")) localStorage.setItem("unlocked_chapter_2", "0");
+        if (!localStorage.getItem("unlocked_chapter_3")) localStorage.setItem("unlocked_chapter_3", "0");
+        if (!localStorage.getItem("unlocked_chapter_4")) localStorage.setItem("unlocked_chapter_4", "0");
+
+        function showMainMenu(event) {
+            if (event) event.stopPropagation();
+            clearTimeout(currentTimeout);
+            isTyping = false;
+            document.getElementById('game-container').style.display = 'none';
+            document.getElementById('extra-container').style.display = 'none';
+            document.getElementById('menu-container').style.display = 'block';
+            closeSaveMenu();
+            
+            const e1 = localStorage.getItem("end_ending_1") === "1";
+            const e2 = localStorage.getItem("end_ending_2") === "1";
+            const e3 = localStorage.getItem("end_ending_3") === "1";
+            const e4 = localStorage.getItem("end_ending_4") === "1";
+            const e5 = localStorage.getItem("end_ending_5") === "1";
+            const joke = localStorage.getItem("flag_joke_home_done") === "1";
+            const extraUnlocked = e1 && e2 && e3 && e4 && e5 && joke;
+
+            const btnContainer = document.getElementById('menu-buttons');
+            
+            let hasAnySave = false;
+            for (let i = 1; i <= 6; i++) {
+                if (localStorage.getItem(`slot_save_chap_${i}`) !== null) {
+                    hasAnySave = true;
+                    break;
+                }
+            }
+
+            btnContainer.innerHTML = `
+                ${hasAnySave ? '<button style="background: #2e1065 !important; border-color: #a855f7 !important;" onclick="showLoadSlotsMenu()">Продолжить</button>' : ''}
+                <button onclick="startChapter(1)">Новая игра</button>
+                <button onclick="showChaptersMenu()">Выбор главы</button>
+                <button id="extra-menu-btn" onclick="${extraUnlocked ? 'openExtraMenu()' : 'event.stopPropagation()'}" ${extraUnlocked ? '' : 'disabled style="opacity:0.3; cursor:not-allowed;"'}>
+                    ${extraUnlocked ? '🎨 Экстра режим' : '🔒 Экстра [Заблокировано]'}
+                </button>
+            `;
+        }
+
+        function showChaptersMenu() {
+            const btnContainer = document.getElementById('menu-buttons');
+            const ch2 = localStorage.getItem("unlocked_chapter_2") === "1";
+            const ch3 = localStorage.getItem("unlocked_chapter_3") === "1";
+            const ch4 = localStorage.getItem("unlocked_chapter_4") === "1";
+
+            btnContainer.innerHTML = `
+                <button onclick="startChapter(1)">Глава 1: Истоки</button>
+                <button onclick="startChapter(2)" ${ch2 ? '' : 'disabled'}>${ch2 ? 'Глава 2: Пейн' : '🔒 [Заблокировано]'}</button>
+                <button onclick="startChapter(3)" ${ch3 ? '' : 'disabled'}>${ch3 ? 'Глава 3: Ад' : '🔒 [Заблокировано]'}</button>
+                <button onclick="startChapter(4)" ${ch4 ? '' : 'disabled'}>${ch4 ? 'Глава 4: Финал' : '🔒 [Заблокировано]'}</button>
+                <button style="border-color: #ef4444; margin-top: 10px;" onclick="showMainMenu()">Назад</button>
+            `;
+        }        function showLoadSlotsMenu() {
+            const btnContainer = document.getElementById('menu-buttons');
+            let html = `<h2 style="font-size:14px; color:#c084fc; margin-bottom:15px;">ВЫБЕРИТЕ СЛОТ ЗАГРУЗКИ:</h2>`;
+            for (let i = 1; i <= 6; i++) {
+                const chap = localStorage.getItem(`slot_save_chap_${i}`);
+                if (chap) {
+                    const sub = localStorage.getItem(`slot_save_sub_${i}`) === "1" ? " Развилка" : "";
+                    html += `<button style="background:#1c1917; border-color:#a855f7; font-size:14px; padding:10px;" onclick="loadGameFromSlot(${i})">Слот ${i}: Глава ${chap}${sub}</button>`;
+                } else {
+                    html += `<button style="font-size:14px; padding:10px; opacity:0.5;" disabled>Слот ${i}: [Пусто]</button>`;
+                }
+            }
+            html += `<button style="border-color: #ef4444; margin-top: 10px; padding:10px;" onclick="showMainMenu()">Назад</button>`;
+            btnContainer.innerHTML = html;
+        }
+
+        function startChapter(chapNum) {
+            currentChapter = chapNum;
+            currentDialogueIndex = 0;
+            inSubScene = false;
+            currentSubSceneKey = "";
+            document.getElementById('menu-container').style.display = 'none';
+            document.getElementById('extra-container').style.display = 'none';
+            document.getElementById('game-container').style.display = 'flex';
+            document.getElementById('choices-overlay').innerHTML = '';
+            closeSaveMenu();
+            const titleScreen = document.getElementById('chapter-title-screen');
+            const titleText = document.getElementById('chapter-title-text');
+            titleText.innerText = allChapters[chapNum].title;
+            titleScreen.style.display = 'flex';
+        }
+
+        function hideChapterTitle() {
+            document.getElementById('chapter-title-screen').style.display = 'none';
+            renderCurrentLine();
+        }
+
+        function toggleSaveSlotsMenu(event) {
+            if (event) event.stopPropagation();
+            let overlay = document.getElementById('choices-overlay');
+            if (overlay.getAttribute('data-mode') === 'save_menu') {
+                closeSaveMenu();
+                return;
+            }
+            document.getElementById('click-hint').style.display = 'none';
+            overlay.setAttribute('data-mode', 'save_menu');
+            let html = `<h2 style="font-size:14px; color:#c084fc; margin-bottom:5px; text-align:center;">ВЫБЕРИТЕ СЛОТ ДЛЯ СОХРАНЕНИЯ:</h2>`;
+            for (let i = 1; i <= 6; i++) {
+                const chap = localStorage.getItem(`slot_save_chap_${i}`);
+                if (chap) {
+                    html += `<button style="background:#111115; border-color:#6b21a8;" onclick="executeSaveToSlot(${i}, event)">💾 Слот ${i} (Перезаписать): Гл. ${chap}</button>`;
+                } else {
+                    html += `<button style="background:#111115; border-color:#4c1d95; opacity:0.8;" onclick="executeSaveToSlot(${i}, event)">💾 Слот ${i}: [Пустой слот]</button>`;
+                }
+            }
+            html += `<button style="border-color: #ef4444; margin-top: 5px;" onclick="closeSaveMenu(event)">❌ Закрыть</button>`;
+            overlay.innerHTML = html;
+        }
+
+        function closeSaveMenu(event) {
+            if (event) event.stopPropagation();
+            let overlay = document.getElementById('choices-overlay');
+            overlay.removeAttribute('data-mode');
+            overlay.innerHTML = '';
+            document.getElementById('click-hint').style.display = 'block';
+            const chapter = allChapters[currentChapter];
+            let currentList = inSubScene ? chapter.scenes[currentSubSceneKey].dialogues : chapter.dialogues;
+            if (currentDialogueIndex >= currentList.length - 1) {
+                renderForksOrChoices();
+            }
+        }        function executeSaveToSlot(slotNum, event) {
+            if (event) event.stopPropagation();
+            localStorage.setItem(`slot_save_chap_${slotNum}`, currentChapter);
+            localStorage.setItem(`slot_save_idx_${slotNum}`, currentDialogueIndex);
+            localStorage.setItem(`slot_save_sub_${slotNum}`, inSubScene ? "1" : "0");
+            localStorage.setItem(`slot_save_key_${slotNum}`, currentSubSceneKey);
+            closeSaveMenu();
+            const alertBox = document.getElementById("custom-alert");
+            alertBox.innerText = `💾 Путь сохранён в слот ${slotNum}!`;
+            alertBox.classList.add("show");
+            setTimeout(() => { alertBox.classList.remove("show"); }, 2000);
+        }
+
+        function loadGameFromSlot(slotNum) {
+            currentChapter = parseInt(localStorage.getItem(`slot_save_chap_${slotNum}`));
+            currentDialogueIndex = parseInt(localStorage.getItem(`slot_save_idx_${slotNum}`));
+            inSubScene = localStorage.getItem(`slot_save_sub_${slotNum}`) === "1";
+            currentSubSceneKey = localStorage.getItem(`slot_save_key_${slotNum}`) || "";
+            document.getElementById('menu-container').style.display = 'none';
+            document.getElementById('extra-container').style.display = 'none';
+            document.getElementById('game-container').style.display = 'flex';
+            renderCurrentLine();
+        }
+
+        function advanceStory() {
+            if (document.getElementById('choices-overlay').getAttribute('data-mode') === 'save_menu') return;
+            if (isTyping) {
+                clearTimeout(currentTimeout);
+                document.getElementById('text').innerHTML = textToType;
+                isTyping = false;
+                return;
+            }
+            const chapter = allChapters[currentChapter];
+            let currentList = inSubScene ? chapter.scenes[currentSubSceneKey].dialogues : chapter.dialogues;
+            if (currentDialogueIndex < currentList.length - 1) {
+                currentDialogueIndex++;
+                renderCurrentLine();
+                localStorage.setItem("autosave_chap", currentChapter);
+                localStorage.setItem("autosave_idx", currentDialogueIndex);
+                localStorage.setItem("autosave_sub", inSubScene ? "1" : "0");
+                localStorage.setItem("autosave_key", currentSubSceneKey);
+            } else {
+                renderForksOrChoices();
+            }
+        }
+
+        function renderForksOrChoices() {
+            const chapter = allChapters[currentChapter];
+            let currentForks = inSubScene ? chapter.scenes[currentSubSceneKey].forks : chapter.forks;
+            handleFork(currentForks);
+        }
+
+        function handleFork(fork) {
+            const buttonsContainer = document.getElementById('choices-overlay');
+            buttonsContainer.innerHTML = '';
+            document.getElementById('click-hint').style.display = 'none';
+            if (fork.flagToSet) {
+                localStorage.setItem("flag_" + fork.flagToSet, "1");
+            }
+            if (fork.type === "choice") {
+                fork.choices.forEach(function(choice) {
+                    const btn = document.createElement('button');
+                    btn.innerText = choice.text;
+                    btn.onclick = function(e) {
+                        e.stopPropagation();
+                        buttonsContainer.innerHTML = '';
+                        inSubScene = true;
+                        currentSubSceneKey = choice.nextScene;
+                        currentDialogueIndex = 0;
+                        document.getElementById('click-hint').style.display = 'block';
+                        renderCurrentLine();
+                    };
+                    buttonsContainer.appendChild(btn);
+                });
+            } else if (fork.type === "next" || fork.type === "next_in_chapter") {
+                inSubScene = true;
+                currentSubSceneKey = fork.nextScene;
+                currentDialogueIndex = 0;
+                document.getElementById('click-hint').style.display = 'block';
+                renderCurrentLine();
+            } else if (fork.type === "check_flag_route") {
+                const isAlt = localStorage.getItem("flag_" + fork.flag) === "1";
+                inSubScene = true;
+                currentSubSceneKey = isAlt ? fork.altScene : fork.normalScene;
+                currentDialogueIndex = 0;
+                document.getElementById('click-hint').style.display = 'block';
+                renderCurrentLine();
+            } else if (fork.type === "check_flag_final_choices") {
+                const isAlt = localStorage.getItem("flag_" + fork.flag) === "1";
+                inSubScene = true;
+                currentSubSceneKey = isAlt ? "pain_choices" : "normal_choices";
+                currentDialogueIndex = 0;
+                document.getElementById('click-hint').style.display = 'block';
+                renderCurrentLine();
+            } else if (fork.type === "finish") {
+                localStorage.setItem("unlocked_chapter_" + fork.nextChapter, "1");
+                startChapter(fork.nextChapter);
+            } else if (fork.type === "finish_game") {
+                if (fork.endingUnlocked) {
+                    localStorage.setItem("end_" + fork.endingUnlocked, "1");
+                }
+                localStorage.removeItem("autosave_chap");
+                localStorage.removeItem("autosave_idx");
+                localStorage.removeItem("autosave_sub");
+                localStorage.removeItem("autosave_key");
+                document.getElementById('choices-overlay').innerHTML = '';
+                document.getElementById('click-hint').style.display = 'none';
+                const menuBtn = document.createElement('button');
+                menuBtn.innerText = "🚪 Вернуться в Главное меню";
+                menuBtn.style.borderColor = "#c084fc";
+                menuBtn.onclick = function(e) {
+                    e.stopPropagation();
+                    showMainMenu();
+                };
+                buttonsContainer.appendChild(menuBtn);
+            }
+        }        function renderCurrentLine() {
+            const chapter = allChapters[currentChapter];
+            let currentList = inSubScene ? chapter.scenes[currentSubSceneKey].dialogues : chapter.dialogues;
+            let line = currentList[currentDialogueIndex];
+            document.getElementById('choices-overlay').innerHTML = '';
+            document.getElementById('speaker-name').innerText = line.speaker;
+            const bgLayer = document.getElementById('bg-layer');
+            bgLayer.style.backgroundImage = "url('" + line.bg + "')";
+            bgLayer.style.filter = 'none';
+            if (line.effect === "darkness") bgLayer.style.filter = 'brightness(0.3) contrast(1.4)';
+            else if (line.effect === "portal") bgLayer.style.filter = 'hue-rotate(280deg) saturate(2)';
+            else if (line.effect === "hell") bgLayer.style.filter = 'sepia(0.5) hue-rotate(330deg) saturate(3) brightness(0.6)';
+            else if (line.effect === "aplane") bgLayer.style.filter = 'grayscale(0.2) contrast(1.1) sepia(0.2)';
+            else if (line.effect === "void") bgLayer.style.filter = 'brightness(0.08) contrast(3.5) saturate(0)';
+            const spriteLayer = document.getElementById('sprite-layer');
+            if (line.sprite) {
+                spriteLayer.style.backgroundImage = "url('" + line.sprite + "')";
+                spriteLayer.style.backgroundPosition = "-" + line.sX + "px -" + line.sY + "px";
+                spriteLayer.style.display = 'block';
+            } else {
+                spriteLayer.style.display = 'none';
+            }
+            textToType = line.text;
+            isTyping = true;
+            typeWriter(textToType, 0, function() { isTyping = false; });
+        }
+
+        function typeWriter(text, i, fnCallback) {
+            if (i < text.length) {
+                document.getElementById('text').innerHTML = text.substring(0, i+1);
+                currentTimeout = setTimeout(function() { typeWriter(text, i + 1, fnCallback) }, 15);
+            } else if (typeof fnCallback == 'function') {
+                fnCallback();
+            }
+        }
+
+        function openExtraMenu() {
+            document.getElementById('menu-container').style.display = 'none';
+            document.getElementById('extra-container').style.display = 'block';
+            if (localStorage.getItem("end_ending_1") === "1") {
+                document.getElementById('archive-lock-btn').style.display = 'none';
+                document.getElementById('archive-content').style.display = 'block';
+            }
+            if (localStorage.getItem("end_ending_1") === "1") document.getElementById('gallery-1').classList.add('unlocked');
+            if (localStorage.getItem("end_ending_2") === "1") document.getElementById('gallery-2').classList.add('unlocked');
+            if (localStorage.getItem("end_ending_3") === "1") document.getElementById('gallery-3').classList.add('unlocked');
+            if (localStorage.getItem("end_ending_4") === "1" && localStorage.getItem("end_ending_5") === "1") document.getElementById('gallery-4').classList.add('unlocked');
+        }
+
+        function exitExtraMenu() {
+            document.getElementById('extra-container').style.display = 'none';
+            showMainMenu();
+        }
+
+        window.onload = function() {
+            window.saveCurrentGame = toggleSaveSlotsMenu;
+            const autoChap = localStorage.getItem("autosave_chap");
+            const autoIdx = localStorage.getItem("autosave_idx");
+            const autoSub = localStorage.getItem("autosave_sub");
+            const autoKey = localStorage.getItem("autosave_key");
+            if (autoChap !== null && autoIdx !== null) {
+                currentChapter = parseInt(autoChap);
+                currentDialogueIndex = parseInt(autoIdx);
+                inSubScene = autoSub === "1";
+                currentSubSceneKey = autoKey || "";
+                document.getElementById('menu-container').style.display = 'none';
+                document.getElementById('extra-container').style.display = 'none';
+                document.getElementById('game-container').style.display = 'flex';
+                renderCurrentLine();
+            } else {
+                showMainMenu();
+            }
+        };
+    </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
