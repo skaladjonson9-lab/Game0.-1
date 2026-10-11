@@ -1,14 +1,14 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Парадокс Машрума: Начало</title>
+    <title>Парадокс Машрума: Глава 1</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background: #0a0a0c;
+            background: #050507;
             color: #ffffff;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
@@ -18,31 +18,33 @@
             box-sizing: border-box;
             background-size: cover;
             background-position: center;
-            transition: background-image 0.8s ease-in-out;
+            transition: background-image 1s ease-in-out, filter 0.5s ease;
         }
         #game-container {
-            background: rgba(10, 10, 12, 0.92);
+            background: rgba(7, 7, 9, 0.95);
             padding: 25px;
             border-top: 4px solid #7f1d1d;
-            min-height: 35vh;
+            min-height: 38vh;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.8);
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.9);
+            z-index: 10;
         }
-        #chapter-title {
-            font-size: 14px;
+        #speaker-name {
+            font-size: 16px;
             color: #ef4444;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-weight: bold;
         }
         #text {
             font-size: 18px;
             line-height: 1.6;
-            margin-bottom: 20px;
-            color: #e2e8f0;
+            margin-bottom: 25px;
+            color: #e4e4e7;
+            min-height: 4.8em;
         }
         #buttons {
             display: flex;
@@ -50,10 +52,10 @@
             gap: 12px;
         }
         button {
-            background: #1e1e24;
-            color: #f1f5f9;
-            border: 1px solid #3f3f46;
-            padding: 14px;
+            background: #18181b;
+            color: #f4f4f5;
+            border: 1px solid #27272a;
+            padding: 15px;
             font-size: 16px;
             border-radius: 6px;
             cursor: pointer;
@@ -65,88 +67,663 @@
             border-color: #f87171;
             transform: translateX(5px);
         }
+        .darkness-effect {
+            filter: brightness(0.4) contrast(1.3);
+        }
     </style>
 </head>
 <body>
 
     <div id="game-container">
         <div>
-            <div id="chapter-title">Глава 1: Истоки Парадокса</div>
-            <div id="text">Загрузка пространственно-временного континуума...</div>
+            <div id="speaker-name">Загрузка...</div>
+            <div id="text"></div>
         </div>
         <div id="buttons"></div>
     </div>
 
     <script>
-        // Сюжетная линия твоей вселенной
         const story = {
             start: {
-                text: "Машруму всего 6 лет. Его дом пуст и тих с тех пор, как маньяк забрал его семью. Он остался совсем один, доедая остатки старой еды в холодных стенах. Единственное спасение — поношенный красный мячик. Во время игры мяч случайно улетает в окно и падает прямо в кузов странного фургона...",
-                bg: "https://unsplash.com", // Мрачный темный дом
+                speaker: "Введение",
+                text: "Тебе всего 6 лет. После того как маньяк убил твою семью, ты остался совсем один в пустом доме. Единственная радость — красный мячик. Но во время игры мяч улетает в окно и падает прямо в кузов странного фургона...",
+                bg: "https://unsplash.com",
                 choices: [
-                    { text: "Залезть в фургон за мячом", nextScene: "van_inside" },
-                    { text: "Остаться дома и голодать дальше", nextScene: "stay_home" }
+                    { text: "Пойти за мячом в фургон", nextScene: "van_inside" },
+                    { text: "Остаться дома", nextScene: "stay_home" }
                 ]
             },
             stay_home: {
-                text: "Страх сковывает Машрума. Он решает не идти за мячом. Еда заканчивается, а одиночество сводит с ума. Но какая-то неведомая, невидимая сила (словно толчок из будущего) мягко, но настойчиво выталкивает его за дверь, прямо к уезжающему фургону...",
-                bg: "https://unsplash.com", // Одинокая улица
+                speaker: "Вмешательство",
+                text: "Ты боишься выходить, но Тьма из будущего уже запустил свой план. Невидимая сила делает так, что ты всё равно покидаешь дом и проскальзываешь в фургон в самый последний момент.",
+                bg: "https://unsplash.com",
                 choices: [
-                    { text: "Догнать фургон и запрыгровать внутрь", nextScene: "van_inside" }
+                    { text: "Ехать в фургоне", nextScene: "van_inside" }
                 ]
             },
             van_inside: {
-                text: "Машрум запрыгивает внутрь. Двери хлопают, мотор ревет. Фургон срывается с места. Через щель парень видит, как машина въезжает на охраняемую территорию странной, засекреченной лаборатории. К счастью, камеры почему-то отключены, а охрана суетится из-за ЧП. Машрум незамеченным проскальзывает вглубь коридоров.",
-                bg: "https://unsplash.com", // Лабораторный коридор
+                speaker: "Лаборатория",
+                text: "Фургон привозит тебя в засекреченную лабораторию. Будущий Тьма уже устроил здесь ЧП и отключил камеры. Охранники мечутся в панике, пока ты незаметно идешь по темным коридорам, следуя за странными светяшками, которые ведут тебя к цели...",
+                bg: "https://unsplash.com",
                 choices: [
-                    { text: "Зайти в комнату со странным светящимся следом", nextScene: "pencil_room" }
+                    { text: "Зайти в комнату с карандашом", nextScene: "pencil_room" }
                 ]
             },
             pencil_room: {
-                text: "В комнате горит тусклый свет. Таинственные «светяшки» в воздухе словно ведут Машрума к столу. Там лежит обычный на вид карандаш. Машрум всегда любил рисовать. Его пальцы сжимают грифель. На чистом листе бумаги он начинает выводить силуэт своего главного страха и одиночества — Тьму...",
-                bg: "https://unsplash.com", // Стол с карандашом
+                speaker: "Машрум (6 лет)",
+                text: "Ты заходишь в кабинет, где светяшки указывают на стол. Там лежит карандаш — аномальный магический предмет, настоящий объект уровня SCP. Ты берешь его и выводишь на листе силуэт своего одиночества — Тьму.",
+                bg: "https://unsplash.com",
                 choices: [
                     { text: "Закончить рисунок", nextScene: "darkness_born" }
                 ]
             },
             darkness_born: {
-                text: "Бумага начинает тлеть черным дымом. Рисунок оживает. Перед 6-летним мальчиком встает сам Тьма. Он реален. Тьма смотрит на Машрума и понимает: он переместился сюда из будущего из-за самого себя. Круг замкнулся, парадокс создан. Тьма берет Машрума за руку, чтобы перенести его отсюда...",
-                bg: "https://unsplash.com", // Мистическая тьма
+                speaker: "Создание Тьмы",
+                text: "Рисунок мгновенно оживает. Перед тобой поднимается абсолютно черное существо с неровными белыми глазами — ведь шестилетний ребенок не может нарисовать идеально ровно. В этот же миг Тьма из будущего передает ему свои знания, память и часть сознания. Парадокс замкнулся. Тьма теперь знает абсолютно всё.",
+                bg: "https://unsplash.com",
+                effect: "darkness",
                 choices: [
-                    { text: "Перенестись в безопасное место (Конец Демо-версии)", nextScene: "demo_end" }
+                    { text: "Довериться Тьме", nextScene: "darkness_action" }
                 ]
             },
-            demo_end: {
-                text: "Тьма преданно защищает Машрума, зная, что в возрасте 10 лет он обязан будет покинуть его, чтобы не уничтожить вселенную временным парадоксом... А впереди Машрума ждет создание Пейна, адские разборки с Люцифером и безумный советский ученый Аплэн, превратившийся в человека-яблоко. Продолжение следует!",
-                bg: "https://unsplash.com", // Космический парадокс
+            darkness_action: {
+                speaker: "Тьма",
+                text: "Тьма не теряет ни секунды. Облагая памятью из будущего, он мгновенно успокаивает тебя, берет за руку и переносит прочь из лаборатории вместе с магическим карандашом. Тьма оберегает тебя следующие четыре года...",
+                bg: "https://unsplash.com",
+                effect: "darkness",
                 choices: [
-                    { text: "Играть сначала", nextScene: "start" }
+                    { text: "Конец Первой Главы", nextScene: "end_chapter_1" }
+                ]
+            },
+            end_chapter_1: {
+                speaker: "Система",
+                text: "Первая глава завершена. Машруму исполнилось 10 лет, и Тьма покинул его, чтобы не разрушить таймлайн. Готов загрузить Продолжение?",
+                bg: "https://unsplash.com",
+                choices: [
+                    { text: "Играть Главу 1 заново", nextScene: "start" }
                 ]
             }
         };
 
-        // Логика движка игры
+        let currentTimeout;
+
+        function typeWriter(text, i, fnCallback) {
+            if (i < text.length) {
+                document.getElementById('text').innerHTML = text.substring(0, i+1) + '<span aria-hidden="true"></span>';
+                currentTimeout = setTimeout(function() {
+                    typeWriter(text, i + 1, fnCallback)
+                }, 15);
+            } else if (typeof fnCallback == 'function') {
+                fnCallback();
+            }
+        }
+
         function showScene(sceneName) {
+            clearTimeout(currentTimeout);
             const scene = story[sceneName];
             if (!scene) return;
 
-            // Меняем текст и фон
-            document.getElementById('text').innerText = scene.text;
+            document.getElementById('speaker-name').innerText = scene.speaker;
             document.body.style.backgroundImage = `url('${scene.bg}')`;
 
-            const buttonsContainer = document.getElementById('buttons');
-            buttonsContainer.innerHTML = ''; // Очищаем кнопки
+            document.body.className = '';
+            if (scene.effect === "darkness") {
+                document.body.classList.add('darkness-effect');
+            }
 
-            // Создаем новые кнопки выбора
-            scene.choices.forEach(choice => {
-                const btn = document.createElement('button');
-                btn.innerText = choice.text;
-                btn.onclick = () => showScene(choice.nextScene);
-                buttonsContainer.appendChild(btn);
+            const buttonsContainer = document.getElementById('buttons');
+            buttonsContainer.innerHTML = ''; 
+
+            typeWriter(scene.text, 0, function() {
+                scene.choices.forEach(choice => {
+                    const btn = document.createElement('button');
+                    btn.innerText = choice.text;
+                    btn.onclick = () => showScene(choice.nextScene);
+                    buttonsContainer.appendChild(btn);
+                });
             });
         }
 
-        // Старт игры
+        showScene('start');
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Парадокс Машрума: Глава 2</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #050507;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            height: 100vh;
+            box-sizing: border-box;
+            background-size: cover;
+            background-position: center;
+            transition: background-image 1s ease-in-out, filter 0.5s ease;
+        }
+        #game-container {
+            background: rgba(7, 7, 9, 0.95);
+            padding: 25px;
+            border-top: 4px solid #ccfbf1;
+            min-height: 38vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.9);
+            z-index: 10;
+        }
+        #speaker-name {
+            font-size: 16px;
+            color: #2dd4bf;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        #text {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: #e4e4e7;
+            min-height: 4.8em;
+        }
+        #buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        button {
+            background: #18181b;
+            color: #f4f4f5;
+            border: 1px solid #27272a;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: #115e59;
+            border-color: #2dd4bf;
+            transform: translateX(5px);
+        }
+        .portal-effect {
+            filter: hue-rotate(280deg) saturate(2);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <div>
+            <div id="speaker-name">Загрузка...</div>
+            <div id="text"></div>
+        </div>
+        <div id="buttons"></div>
+    </div>
+
+    <script>
+        const story = {
+            start: {
+                speaker: "Глава 2: Новый друг",
+                text: "Машруму исполнилось 10 лет. Тьма покинул его, выполняя законы таймлайна. Машрум снова остался один в пустом мире. Тоска пожирает его изнутри. Единственное, что у него осталось — тот самый магический SCP-карандаш, утащенный из лаборатории. Машрум решает использовать его аномальную силу, чтобы нарисовать себе друга-ровесника. Пейна.",
+                bg: "https://unsplash.com",
+                choices: [
+                    { text: "Оживить рисунок", nextScene: "pein_born" }
+                ]
+            },
+            pein_born: {
+                speaker: "Машрум и Пейн",
+                text: "В 10 лет Машрум рисует уже намного лучше, поэтому Пейн получается обычным с виду мальчиком. Они становятся самыми близкими людьми. Пять лет они живут душа в душу, деля один дом и скрываясь от остального мира. Но магический карандаш наделил Пейна скрытой, колоссальной силой, которая просыпается, когда им стукнуло по 15...",
+                bg: "https://unsplash.com",
+                choices: [
+                    { text: "Что за сила?", nextScene: "the_power" }
+                ]
+            },
+            the_power: {
+                speaker: "Пробуждение аномалии",
+                text: "Пейн осознает, что стал невероятно силен — его мощь сравнима с силой Тьмы (хотя он явно слабее него, но Пейн тогда о Тьме ничего не знал). Аномалия карандаша дала ему способность открывать порталы и прыгать по мультивселенной. Пейна охватывает жажда приключений: «Машрум, тут ловить нечего! Погнали со мной исследовать другие миры!»",
+                bg: "https://unsplash.com",
+                effect: "portal",
+                choices: [
+                    { text: "Машрум: «Я не отпущу тебя!»", nextScene: "the_argument" }
+                ]
+            },
+            the_argument: {
+                speaker: "Страх одиночества",
+                text: "15-летний, ещё психологически не сформированный Машрум впадает в панику. Страх одиночества парализует его. Сначала маньяк убил семью, потом ушел Тьма... Он просто не вынесет потерю ещё одного, последнего друга! Машрум кричит, плачет и умоляет Пейна остаться, до ужаса боясь снова остаться один в пустом доме.",
+                bg: "https://unsplash.com",
+                choices: [
+                    { text: "Пейн делает выбор...", nextScene: "pein_leaves" }
+                ]
+            },
+            pein_leaves: {
+                speaker: "Эгоизм Пейна",
+                text: "Но Пейна поглотила гордыня и жажда свободы. Слезы и крики друга его не трогают. «Я не собираюсь гнить в этой дыре ради твоих страхов», — холодно бросает он. Пейн делает шаг в сияющий портал, оставляя Машрума на полу с разбитым сердцем. Ссора навсегда разводит их пути. Пейн уходит грабить мультивселенную...",
+                bg: "https://unsplash.com",
+                choices: [
+                    { text: "Конец Второй Главы", nextScene: "end_chapter_2" }
+                ]
+            },
+            end_chapter_2: {
+                speaker: "Система",
+                text: "Вторая глава завершена. Пейн ушел в миры, где время идет иначе, а покинутый Машрум остался на Земле один. Готов перейти к Истории Пейна в Аду?",
+                bg: "https://unsplash.com",
+                choices: [
+                    { text: "Играть Главу 2 заново", nextScene: "start" }
+                ]
+            }
+        };
+
+        let currentTimeout;
+
+        function typeWriter(text, i, fnCallback) {
+            if (i < text.length) {
+                document.getElementById('text').innerHTML = text.substring(0, i+1) + '<span aria-hidden="true"></span>';
+                currentTimeout = setTimeout(function() {
+                    typeWriter(text, i + 1, fnCallback)
+                }, 15);
+            } else if (typeof fnCallback == 'function') {
+                fnCallback();
+            }
+        }
+
+        function showScene(sceneName) {
+            clearTimeout(currentTimeout);
+            const scene = story[sceneName];
+            if (!scene) return;
+
+            document.getElementById('speaker-name').innerText = scene.speaker;
+            document.body.style.backgroundImage = `url('${scene.bg}')`;
+
+            document.body.className = '';
+            if (scene.effect === "portal") {
+                document.body.classList.add('portal-effect');
+            }
+
+            const buttonsContainer = document.getElementById('buttons');
+            buttonsContainer.innerHTML = ''; 
+
+            typeWriter(scene.text, 0, function() {
+                scene.choices.forEach(choice => {
+                    const btn = document.createElement('button');
+                    btn.innerText = choice.text;
+                    btn.onclick = () => showScene(choice.nextScene);
+                    buttonsContainer.appendChild(btn);
+                });
+            });
+        }
+
+        showScene('start');
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Парадокс Машрума: Глава 3</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #050507;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            height: 100vh;
+            box-sizing: border-box;
+            background-size: cover;
+            background-position: center;
+            transition: background-image 1s ease-in-out, filter 0.5s ease;
+        }
+        #game-container {
+            background: rgba(7, 7, 9, 0.95);
+            padding: 25px;
+            border-top: 4px solid #b91c1c;
+            min-height: 38vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.9);
+            z-index: 10;
+        }
+        #speaker-name {
+            font-size: 16px;
+            color: #f87171;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        #text {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: #e4e4e7;
+            min-height: 4.8em;
+        }
+        #buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        button {
+            background: #18181b;
+            color: #f4f4f5;
+            border: 1px solid #27272a;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: #991b1b;
+            border-color: #f87171;
+            transform: translateX(5px);
+        }
+        .hell-effect {
+            filter: sepia(0.5) hue-rotate(330deg) saturate(3) brightness(0.6);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <div>
+            <div id="speaker-name">Загрузка...</div>
+            <div id="text"></div>
+        </div>
+        <div id="buttons"></div>
+    </div>
+
+    <script>
+        const story = {
+            start: {
+                speaker: "Глава 3: Путь Пейна",
+                text: "Пока во вселенной Машрума проходит всего 2 года (ему становится 17), Пейн в других мирах проживает целых 13 лет. К 28 годам он становится величайшим мафиози в мультивселенной, совершая наглые ограбления и убийства. Но криминальная роскошь обрывается внезапно — Пейн погибает от передозировки. Его душа падает в Ад.",
+                bg: "https://unsplash.com",
+                choices: [
+                    { text: "Очнуться в Аду", nextScene: "hell_arrival" }
+                ]
+            },
+            hell_arrival: {
+                speaker: "Пейн (28 лет)",
+                text: "Пейн открывает глаза в Преисподней. Он стал обычным, слабым демоном, но его гордость не сломлена. Он начинает жестокую войну — режет местных демонов одного за другим и пожирает их силу, стремительно развивая свою мощь. Вскоре этот кровавый хаос замечает сам Люцифер...",
+                bg: "https://unsplash.com",
+                effect: "hell",
+                choices: [
+                    { text: "Встретиться с Владыкой Ада", nextScene: "lucifer_deal" }
+                ]
+            },
+            lucifer_deal: {
+                speaker: "Люцифер",
+                text: "Пораженный аномальной силой Пейна, Люцифер берет его в ученики, думая использовать как личное оружие. Пейн соглашается. Но это лишь план — Пейн хочет втереться в доверие, подобраться поближе и незаметно похитить всю силу дьявола, чтобы самому занять его трон.",
+                bg: "https://unsplash.com",
+                effect: "hell",
+                choices: [
+                    { text: "Попытаться убить Люцифера", nextScene: "lucifer_betrayal" }
+                ]
+            },
+            lucifer_betrayal: {
+                speaker: "Побег из Ада",
+                text: "Пейн нападает, но Люцифер успевает среагировать. В диком испуге дьявол приказывает охране уничтожить наглеца. Пейн трусит и бросается в бега, не зная, что ОН УЖЕ СИЛЬНЕЕ ЛЮЦИФЕРА. Спасая свою шкуру, он открывает портал и на полной скорости прыгает в случайный мир...",
+                bg: "https://unsplash.com",
+                effect: "hell",
+                choices: [
+                    { text: "Вылететь из портала", nextScene: "scientist_lab" }
+                ]
+            },
+            scientist_lab: {
+                speaker: "СССР. Лаборатория Аплэна",
+                text: "Пейн на бешеной скорости вылетает из портала и с размаху врезается в ученого Аплэна — лучшего гения этой вселенной. Аплэн в этот момент держал секретную сыворотку яблока, превращающую объекты в плоды. Колба разбивается, заливая их обоих жидкостью. Из-за побочного эффекта тело Пейна распадается, но его душа намертво перемещается в Аплэна!",
+                bg: "https://unsplash.com",
+                choices: [
+                    { text: "Конец Третьей Главы", nextScene: "end_chapter_3" }
+                ]
+            },
+            end_chapter_3: {
+                speaker: "Система",
+                text: "Третья глава завершена. Пейн и Аплэн слились в одно существо: полудемона, получеловека, полуяблоко. Готов перейти к финальной Четвертой Главе, где столкнутся все герои, а Тьма сотрет вселенную?",
+                bg: "https://unsplash.com",
+                choices: [
+                    { text: "Играть Главу 3 заново", nextScene: "start" }
+                ]
+            }
+        };
+
+        let currentTimeout;
+
+        function typeWriter(text, i, fnCallback) {
+            if (i < text.length) {
+                document.getElementById('text').innerHTML = text.substring(0, i+1) + '<span aria-hidden="true"></span>';
+                currentTimeout = setTimeout(function() {
+                    typeWriter(text, i + 1, fnCallback)
+                }, 15);
+            } else if (typeof fnCallback == 'function') {
+                fnCallback();
+            }
+        }
+
+        function showScene(sceneName) {
+            clearTimeout(currentTimeout);
+            const scene = story[sceneName];
+            if (!scene) return;
+
+            document.getElementById('speaker-name').innerText = scene.speaker;
+            document.body.style.backgroundImage = `url('${scene.bg}')`;
+
+            document.body.className = '';
+            if (scene.effect === "hell") {
+                document.body.classList.add('hell-effect');
+            }
+
+            const buttonsContainer = document.getElementById('buttons');
+            buttonsContainer.innerHTML = ''; 
+
+            typeWriter(scene.text, 0, function() {
+                scene.choices.forEach(choice => {
+                    const btn = document.createElement('button');
+                    btn.innerText = choice.text;
+                    btn.onclick = () => showScene(choice.nextScene);
+                    buttonsContainer.appendChild(btn);
+                });
+            });
+        }
+
+        showScene('start');
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Парадокс Машрума: Финал</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #050507;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            height: 100vh;
+            box-sizing: border-box;
+            background-size: cover;
+            background-position: center;
+            transition: background-image 1s ease-in-out, filter 0.5s ease;
+        }
+        #game-container {
+            background: rgba(7, 7, 9, 0.95);
+            padding: 25px;
+            border-top: 4px solid #6b21a8;
+            min-height: 38vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.9);
+            z-index: 10;
+        }
+        #speaker-name {
+            font-size: 16px;
+            color: #c084fc;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        #text {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: #e4e4e7;
+            min-height: 4.8em;
+        }
+        #buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        button {
+            background: #18181b;
+            color: #f4f4f5;
+            border: 1px solid #27272a;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: #581c87;
+            border-color: #c084fc;
+            transform: translateX(5px);
+        }
+        .aplane-effect {
+            filter: grayscale(0.2) contrast(1.1) sepia(0.2);
+        }
+        .void-effect {
+            filter: brightness(0.2) contrast(2) saturate(0);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <div>
+            <div id="speaker-name">Загрузка...</div>
+            <div id="text"></div>
+        </div>
+        <div id="buttons"></div>
+    </div>
+
+    <script>
+        const story = {
+            start: {
+                speaker: "Глава 4: Борьба за контроль",
+                text: "Две души заперты в одном теле. Когда Аплэн засыпает, Пейн перехватывает контроль над его руками и ногами, хаотично прыгая по мультивселенной. Они не могут ужиться. Наконец, Аплэн конструирует уникальную технологичную маску. Она намертво подавляет сознание Пейна и позволяет ученому использовать его демонические силы для осознанных путешествий между мирами.",
+                bg: "https://unsplash.com",
+                choices: [
+                    { text: "Надеть маску и бросить всё", nextScene: "aplane_travel" }
+                ]
+            },
+            aplane_travel: {
+                speaker: "Аплэн (Человек-Яблоко)",
+                text: "Аплэн бросает свою старую советскую лабораторию. Он отправляется исследовать изнанку реальности, даже не догадываясь, что Тьма из будущего уже заразил всю мультивселенную парадоксами. По первоначальному таймлайну Аплэн должен был создать Тьму только через 20 лет, но вмешательство изменило абсолютно всё...",
+                bg: "https://unsplash.com",
+                effect: "aplane",
+                choices: [
+                    { text: "Перенестись на Землю к Машруму", nextScene: "final_meeting" }
+                ]
+            },
+            final_meeting: {
+                speaker: "Великое столкновение",
+                text: "Вселенные сжимаются. В одной точке сталкиваются все: 17-летний оригинальный Машрум и Аплэн, внутри которого заперт Пейн. В этот же миг просыпается Тьма, который тысячи лет спал в теле Аплэна, чтобы не портить хрупкие нити времени. Таймлайн окончательно разрушен: Пейна не должно было существовать, Аплэн не должен был стать полуяблоком-полудемоном.",
+                bg: "https://unsplash.com",
+                choices: [
+                    { text: "Тьма принимает решение...", nextScene: "universe_destruction" }
+                ]
+            },
+            universe_destruction: {
+                speaker: "Тьма",
+                text: "В этой вселенной находится альтернативная, копия-версия Машрума, чье существование грозит стереть оригинал. Тьма раскрывает свои белые глаза на полную мощность. Реальность начинает трещать и осыпаться пеплом. Чтобы защитить своего истинного создателя — 17-летнего оригинального Машрума — Тьма стирает всю эту альтернативную вселенную целиком.",
+                bg: "https://unsplash.com",
+                effect: "void",
+                choices: [
+                    { text: "Взглянуть в пустоту", nextScene: "the_end" }
+                ]
+            },
+            the_end: {
+                speaker: "Парадокс Машрума",
+                text: "Вселенная стерта. Осталась лишь пустота, Машрум и Тьма, запертые в бесконечной временной петле. Круг замкнулся. Спасибо, что прошли эту историю!",
+                bg: "https://unsplash.com",
+                choices: [
+                    { text: "Вернуться в меню", nextScene: "start" }
+                ]
+            }
+        };
+
+        let currentTimeout;
+
+        function typeWriter(text, i, fnCallback) {
+            if (i < text.length) {
+                document.getElementById('text').innerHTML = text.substring(0, i+1) + '<span aria-hidden="true"></span>';
+                currentTimeout = setTimeout(function() {
+                    typeWriter(text, i + 1, fnCallback)
+                }, 15);
+            } else if (typeof fnCallback == 'function') {
+                fnCallback();
+            }
+        }
+
+        function showScene(sceneName) {
+            clearTimeout(currentTimeout);
+            const scene = story[sceneName];
+            if (!scene) return;
+
+            document.getElementById('speaker-name').innerText = scene.speaker;
+            document.body.style.backgroundImage = `url('${scene.bg}')`;
+
+            document.body.className = '';
+            if (scene.effect === "aplane") {
+                document.body.classList.add('aplane-effect');
+            } else if (scene.effect === "void") {
+                document.body.classList.add('void-effect');
+            }
+
+            const buttonsContainer = document.getElementById('buttons');
+            buttonsContainer.innerHTML = ''; 
+
+            typeWriter(scene.text, 0, function() {
+                scene.choices.forEach(choice => {
+                    const btn = document.createElement('button');
+                    btn.innerText = choice.text;
+                    btn.onclick = () => showScene(choice.nextScene);
+                    buttonsContainer.appendChild(btn);
+                });
+            });
+        }
+
         showScene('start');
     </script>
 </body>
