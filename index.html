@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моя Визуальная Новелла</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #121212;
+            color: #ffffff;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+        #game-container {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 20px;
+            border-top: 3px solid #ff4757;
+            min-height: 30vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        #text {
+            font-size: 18px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        #buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        button {
+            background: #2f3542;
+            color: white;
+            border: 1px solid #747d8c;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #ff4757;
+            border-color: #ff4757;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <div id="text">Загрузка игры...</div>
+        <div id="buttons"></div>
+    </div>
+
+    <script>
+        // Твой сюжет игры
+        const story = {
+            start: {
+                text: "Ты открываешь глаза. Голова трещит. Вокруг темнота, но впереди видны два силуэта. Кто это?",
+                choices: [
+                    { text: "Подойти к странному парню в капюшоне", nextScene: "hoodie" },
+                    { text: "Пойти на звук капающей воды", nextScene: "water" }
+                ]
+            },
+            hoodie: {
+                text: "Парень резко оборачивается. У него на худи логотип GitHub! Он протягивает тебе флешку и говорит: 'Код готов, родной'. Ты спасен!",
+                choices: [
+                    { text: "Начать сначала", nextScene: "start" }
+                ]
+            },
+            water: {
+                text: "Ты идешь на звук, оступаешься в темноте и падаешь в глубокий люк. Ну приплыли... Конец игры.",
+                choices: [
+                    { text: "Попробовать снова", nextScene: "start" }
+                ]
+            }
+        };
+
+        // Движок игры
+        function showScene(sceneName) {
+            const scene = story[sceneName];
+            if (!scene) return;
+
+            document.getElementById('text').innerText = scene.text;
+            const buttonsContainer = document.getElementById('buttons');
+            buttonsContainer.innerHTML = ''; // Очищаем старые кнопки
+
+            scene.choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.innerText = choice.text;
+                btn.onclick = () => showScene(choice.nextScene);
+                buttonsContainer.appendChild(btn);
+            });
+        }
+
+        // Запуск с самого начала
+        showScene('start');
+    </script>
+</body>
+</html>
