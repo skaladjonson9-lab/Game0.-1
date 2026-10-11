@@ -1,98 +1,143 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Моя Визуальная Новелла</title>
+    <title>Парадокс Машрума: Начало</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background: #121212;
+            background: #0a0a0c;
             color: #ffffff;
-            font-family: sans-serif;
+            font-family: 'Courier New', Courier, monospace;
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
             height: 100vh;
             box-sizing: border-box;
+            background-size: cover;
+            background-position: center;
+            transition: background-image 0.8s ease-in-out;
         }
         #game-container {
-            background: rgba(0, 0, 0, 0.85);
-            padding: 20px;
-            border-top: 3px solid #ff4757;
-            min-height: 30vh;
+            background: rgba(10, 10, 12, 0.92);
+            padding: 25px;
+            border-top: 4px solid #7f1d1d;
+            min-height: 35vh;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.8);
+        }
+        #chapter-title {
+            font-size: 14px;
+            color: #ef4444;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            font-weight: bold;
         }
         #text {
             font-size: 18px;
-            line-height: 1.5;
+            line-height: 1.6;
             margin-bottom: 20px;
+            color: #e2e8f0;
         }
         #buttons {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
         button {
-            background: #2f3542;
-            color: white;
-            border: 1px solid #747d8c;
-            padding: 12px;
+            background: #1e1e24;
+            color: #f1f5f9;
+            border: 1px solid #3f3f46;
+            padding: 14px;
             font-size: 16px;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             text-align: left;
-            transition: 0.2s;
+            transition: all 0.3s ease;
         }
         button:hover {
-            background: #ff4757;
-            border-color: #ff4757;
+            background: #7f1d1d;
+            border-color: #f87171;
+            transform: translateX(5px);
         }
     </style>
 </head>
 <body>
 
     <div id="game-container">
-        <div id="text">Загрузка игры...</div>
+        <div>
+            <div id="chapter-title">Глава 1: Истоки Парадокса</div>
+            <div id="text">Загрузка пространственно-временного континуума...</div>
+        </div>
         <div id="buttons"></div>
     </div>
 
     <script>
-        // Твой сюжет игры
+        // Сюжетная линия твоей вселенной
         const story = {
             start: {
-                text: "Ты открываешь глаза. Голова трещит. Вокруг темнота, но впереди видны два силуэта. Кто это?",
+                text: "Машруму всего 6 лет. Его дом пуст и тих с тех пор, как маньяк забрал его семью. Он остался совсем один, доедая остатки старой еды в холодных стенах. Единственное спасение — поношенный красный мячик. Во время игры мяч случайно улетает в окно и падает прямо в кузов странного фургона...",
+                bg: "https://unsplash.com", // Мрачный темный дом
                 choices: [
-                    { text: "Подойти к странному парню в капюшоне", nextScene: "hoodie" },
-                    { text: "Пойти на звук капающей воды", nextScene: "water" }
+                    { text: "Залезть в фургон за мячом", nextScene: "van_inside" },
+                    { text: "Остаться дома и голодать дальше", nextScene: "stay_home" }
                 ]
             },
-            hoodie: {
-                text: "Парень резко оборачивается. У него на худи логотип GitHub! Он протягивает тебе флешку и говорит: 'Код готов, родной'. Ты спасен!",
+            stay_home: {
+                text: "Страх сковывает Машрума. Он решает не идти за мячом. Еда заканчивается, а одиночество сводит с ума. Но какая-то неведомая, невидимая сила (словно толчок из будущего) мягко, но настойчиво выталкивает его за дверь, прямо к уезжающему фургону...",
+                bg: "https://unsplash.com", // Одинокая улица
                 choices: [
-                    { text: "Начать сначала", nextScene: "start" }
+                    { text: "Догнать фургон и запрыгровать внутрь", nextScene: "van_inside" }
                 ]
             },
-            water: {
-                text: "Ты идешь на звук, оступаешься в темноте и падаешь в глубокий люк. Ну приплыли... Конец игры.",
+            van_inside: {
+                text: "Машрум запрыгивает внутрь. Двери хлопают, мотор ревет. Фургон срывается с места. Через щель парень видит, как машина въезжает на охраняемую территорию странной, засекреченной лаборатории. К счастью, камеры почему-то отключены, а охрана суетится из-за ЧП. Машрум незамеченным проскальзывает вглубь коридоров.",
+                bg: "https://unsplash.com", // Лабораторный коридор
                 choices: [
-                    { text: "Попробовать снова", nextScene: "start" }
+                    { text: "Зайти в комнату со странным светящимся следом", nextScene: "pencil_room" }
+                ]
+            },
+            pencil_room: {
+                text: "В комнате горит тусклый свет. Таинственные «светяшки» в воздухе словно ведут Машрума к столу. Там лежит обычный на вид карандаш. Машрум всегда любил рисовать. Его пальцы сжимают грифель. На чистом листе бумаги он начинает выводить силуэт своего главного страха и одиночества — Тьму...",
+                bg: "https://unsplash.com", // Стол с карандашом
+                choices: [
+                    { text: "Закончить рисунок", nextScene: "darkness_born" }
+                ]
+            },
+            darkness_born: {
+                text: "Бумага начинает тлеть черным дымом. Рисунок оживает. Перед 6-летним мальчиком встает сам Тьма. Он реален. Тьма смотрит на Машрума и понимает: он переместился сюда из будущего из-за самого себя. Круг замкнулся, парадокс создан. Тьма берет Машрума за руку, чтобы перенести его отсюда...",
+                bg: "https://unsplash.com", // Мистическая тьма
+                choices: [
+                    { text: "Перенестись в безопасное место (Конец Демо-версии)", nextScene: "demo_end" }
+                ]
+            },
+            demo_end: {
+                text: "Тьма преданно защищает Машрума, зная, что в возрасте 10 лет он обязан будет покинуть его, чтобы не уничтожить вселенную временным парадоксом... А впереди Машрума ждет создание Пейна, адские разборки с Люцифером и безумный советский ученый Аплэн, превратившийся в человека-яблоко. Продолжение следует!",
+                bg: "https://unsplash.com", // Космический парадокс
+                choices: [
+                    { text: "Играть сначала", nextScene: "start" }
                 ]
             }
         };
 
-        // Движок игры
+        // Логика движка игры
         function showScene(sceneName) {
             const scene = story[sceneName];
             if (!scene) return;
 
+            // Меняем текст и фон
             document.getElementById('text').innerText = scene.text;
-            const buttonsContainer = document.getElementById('buttons');
-            buttonsContainer.innerHTML = ''; // Очищаем старые кнопки
+            document.body.style.backgroundImage = `url('${scene.bg}')`;
 
+            const buttonsContainer = document.getElementById('buttons');
+            buttonsContainer.innerHTML = ''; // Очищаем кнопки
+
+            // Создаем новые кнопки выбора
             scene.choices.forEach(choice => {
                 const btn = document.createElement('button');
                 btn.innerText = choice.text;
@@ -101,7 +146,7 @@
             });
         }
 
-        // Запуск с самого начала
+        // Старт игры
         showScene('start');
     </script>
 </body>
