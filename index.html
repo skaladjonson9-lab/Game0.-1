@@ -29,7 +29,6 @@
             flex-direction: column;
             justify-content: space-between;
             box-shadow: 0 -10px 40px rgba(0,0,0,0.9);
-            z-index: 10;
         }
         #speaker-name {
             font-size: 16px;
@@ -77,47 +76,51 @@
     <div id="game-container">
         <div>
             <div id="speaker-name">Загрузка...</div>
-            <div id="text"></div>
+            <div id="text">...</div>
         </div>
         <div id="buttons"></div>
     </div>
 
     <script>
         const story = {
-            start: {
-                speaker: "Введение",
-                text: "Тебе всего 6 лет. После того как маньяк убил твою семью, ты остался совсем один в пустом доме. Единственная радость — красный мячик. Но во время игры мяч улетает в окно и падает прямо в кузов странного фургона...",
+            "start": {
+                speaker: "Глава 1: Истоки Парадокса",
+                text: "Тебе всего 6 лет. После того как маньяк убил твою тему, ты остался совсем один в пустом доме, доедая остатки еды. Единственная радость — красный мячик. Но во время игры мяч улетает в окно и падает прямо в кузов странного фургона...",
                 bg: "https://unsplash.com",
+                effect: "none",
                 choices: [
                     { text: "Пойти за мячом в фургон", nextScene: "van_inside" },
                     { text: "Остаться дома", nextScene: "stay_home" }
                 ]
             },
-            stay_home: {
+            "stay_home": {
                 speaker: "Вмешательство",
                 text: "Ты боишься выходить, но Тьма из будущего уже запустил свой план. Невидимая сила делает так, что ты всё равно покидаешь дом и проскальзываешь в фургон в самый последний момент.",
                 bg: "https://unsplash.com",
+                effect: "none",
                 choices: [
                     { text: "Ехать в фургоне", nextScene: "van_inside" }
                 ]
             },
-            van_inside: {
+            "van_inside": {
                 speaker: "Лаборатория",
                 text: "Фургон привозит тебя в засекреченную лабораторию. Будущий Тьма уже устроил здесь ЧП и отключил камеры. Охранники мечутся в панике, пока ты незаметно идешь по темным коридорам, следуя за странными светяшками, которые ведут тебя к цели...",
                 bg: "https://unsplash.com",
+                effect: "none",
                 choices: [
                     { text: "Зайти в комнату с карандашом", nextScene: "pencil_room" }
                 ]
             },
-            pencil_room: {
+            "pencil_room": {
                 speaker: "Машрум (6 лет)",
                 text: "Ты заходишь в кабинет, где светяшки указывают на стол. Там лежит карандаш — аномальный магический предмет, настоящий объект уровня SCP. Ты берешь его и выводишь на листе силуэт своего одиночества — Тьму.",
                 bg: "https://unsplash.com",
+                effect: "none",
                 choices: [
                     { text: "Закончить рисунок", nextScene: "darkness_born" }
                 ]
             },
-            darkness_born: {
+            "darkness_born": {
                 speaker: "Создание Тьмы",
                 text: "Рисунок мгновенно оживает. Перед тобой поднимается абсолютно черное существо с неровными белыми глазами — ведь шестилетний ребенок не может нарисовать идеально ровно. В этот же миг Тьма из будущего передает ему свои знания, память и часть сознания. Парадокс замкнулся. Тьма теперь знает абсолютно всё.",
                 bg: "https://unsplash.com",
@@ -126,19 +129,20 @@
                     { text: "Довериться Тьме", nextScene: "darkness_action" }
                 ]
             },
-            darkness_action: {
+            "darkness_action": {
                 speaker: "Тьма",
                 text: "Тьма не теряет ни секунды. Облагая памятью из будущего, он мгновенно успокаивает тебя, берет за руку и переносит прочь из лаборатории вместе с магическим карандашом. Тьма оберегает тебя следующие четыре года...",
                 bg: "https://unsplash.com",
                 effect: "darkness",
                 choices: [
-                    { text: "Конец Первой Главы", nextScene: "end_chapter_1" }
+                    { text: "Конец Главы 1. Ждать продолжения...", nextScene: "end" }
                 ]
             },
-            end_chapter_1: {
+            "end": {
                 speaker: "Система",
-                text: "Первая глава завершена. Машруму исполнилось 10 лет, и Тьма покинул его, чтобы не разрушить таймлайн. Готов загрузить Продолжение?",
+                text: "Машруму исполняется 10 лет, и Тьма покидает его ради сохранения таймлайна. Первая глава успешно загружена и работает на твоем сайте!",
                 bg: "https://unsplash.com",
+                effect: "none",
                 choices: [
                     { text: "Играть Главу 1 заново", nextScene: "start" }
                 ]
@@ -149,7 +153,7 @@
 
         function typeWriter(text, i, fnCallback) {
             if (i < text.length) {
-                document.getElementById('text').innerHTML = text.substring(0, i+1) + '<span aria-hidden="true"></span>';
+                document.getElementById('text').innerHTML = text.substring(0, i+1);
                 currentTimeout = setTimeout(function() {
                     typeWriter(text, i + 1, fnCallback)
                 }, 15);
@@ -164,7 +168,7 @@
             if (!scene) return;
 
             document.getElementById('speaker-name').innerText = scene.speaker;
-            document.body.style.backgroundImage = `url('${scene.bg}')`;
+            document.body.style.backgroundImage = "url('" + scene.bg + "')";
 
             document.body.className = '';
             if (scene.effect === "darkness") {
@@ -175,16 +179,18 @@
             buttonsContainer.innerHTML = ''; 
 
             typeWriter(scene.text, 0, function() {
-                scene.choices.forEach(choice => {
+                scene.choices.forEach(function(choice) {
                     const btn = document.createElement('button');
                     btn.innerText = choice.text;
-                    btn.onclick = () => showScene(choice.nextScene);
+                    btn.onclick = function() { showScene(choice.nextScene); };
                     buttonsContainer.appendChild(btn);
                 });
             });
         }
 
-        showScene('start');
+        window.onload = function() {
+            showScene('start');
+        };
     </script>
 </body>
 </html>
@@ -213,13 +219,12 @@
         #game-container {
             background: rgba(7, 7, 9, 0.95);
             padding: 25px;
-            border-top: 4px solid #ccfbf1;
+            border-top: 4px solid #2dd4bf;
             min-height: 38vh;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             box-shadow: 0 -10px 40px rgba(0,0,0,0.9);
-            z-index: 10;
         }
         #speaker-name {
             font-size: 16px;
@@ -267,30 +272,32 @@
     <div id="game-container">
         <div>
             <div id="speaker-name">Загрузка...</div>
-            <div id="text"></div>
+            <div id="text">...</div>
         </div>
         <div id="buttons"></div>
     </div>
 
     <script>
         const story = {
-            start: {
+            "start": {
                 speaker: "Глава 2: Новый друг",
                 text: "Машруму исполнилось 10 лет. Тьма покинул его, выполняя законы таймлайна. Машрум снова остался один в пустом мире. Тоска пожирает его изнутри. Единственное, что у него осталось — тот самый магический SCP-карандаш, утащенный из лаборатории. Машрум решает использовать его аномальную силу, чтобы нарисовать себе друга-ровесника. Пейна.",
                 bg: "https://unsplash.com",
+                effect: "none",
                 choices: [
                     { text: "Оживить рисунок", nextScene: "pein_born" }
                 ]
             },
-            pein_born: {
+            "pein_born": {
                 speaker: "Машрум и Пейн",
                 text: "В 10 лет Машрум рисует уже намного лучше, поэтому Пейн получается обычным с виду мальчиком. Они становятся самыми близкими людьми. Пять лет они живут душа в душу, деля один дом и скрываясь от остального мира. Но магический карандаш наделил Пейна скрытой, колоссальной силой, которая просыпается, когда им стукнуло по 15...",
                 bg: "https://unsplash.com",
+                effect: "none",
                 choices: [
                     { text: "Что за сила?", nextScene: "the_power" }
                 ]
             },
-            the_power: {
+            "the_power": {
                 speaker: "Пробуждение аномалии",
                 text: "Пейн осознает, что стал невероятно силен — его мощь сравнима с силой Тьмы (хотя он явно слабее него, но Пейн тогда о Тьме ничего не знал). Аномалия карандаша дала ему способность открывать порталы и прыгать по мультивселенной. Пейна охватывает жажда приключений: «Машрум, тут ловить нечего! Погнали со мной исследовать другие миры!»",
                 bg: "https://unsplash.com",
@@ -299,26 +306,29 @@
                     { text: "Машрум: «Я не отпущу тебя!»", nextScene: "the_argument" }
                 ]
             },
-            the_argument: {
+            "the_argument": {
                 speaker: "Страх одиночества",
-                text: "15-летний, ещё психологически не сформированный Машрум впадает в панику. Страх одиночества парализует его. Сначала маньяк убил семью, потом ушел Тьма... Он просто не вынесет потерю ещё одного, последнего друга! Машрум кричит, плачет и умоляет Пейна остаться, до ужаса боясь снова остаться один в пустом доме.",
+                text: "15-летний Машрум впадает в панику. Страх одиночества парализует его. Сначала маньяк убил семью, потом ушел Тьма... Он просто не вынесет потерю ещё одного, последнего друга! Машрум кричит, плачет и умоляет Пейна остаться, до ужаса боясь снова остаться один в пустом доме.",
                 bg: "https://unsplash.com",
+                effect: "none",
                 choices: [
                     { text: "Пейн делает выбор...", nextScene: "pein_leaves" }
                 ]
             },
-            pein_leaves: {
+            "pein_leaves": {
                 speaker: "Эгоизм Пейна",
                 text: "Но Пейна поглотила гордыня и жажда свободы. Слезы и крики друга его не трогают. «Я не собираюсь гнить в этой дыре ради твоих страхов», — холодно бросает он. Пейн делает шаг в сияющий портал, оставляя Машрума на полу с разбитым сердцем. Ссора навсегда разводит их пути. Пейн уходит грабить мультивселенную...",
                 bg: "https://unsplash.com",
+                effect: "none",
                 choices: [
-                    { text: "Конец Второй Главы", nextScene: "end_chapter_2" }
+                    { text: "Конец Второй Главы. Ждать продолжения...", nextScene: "end" }
                 ]
             },
-            end_chapter_2: {
+            "end": {
                 speaker: "Система",
-                text: "Вторая глава завершена. Пейн ушел в миры, где время идет иначе, а покинутый Машрум остался на Земле один. Готов перейти к Истории Пейна в Аду?",
+                text: "Вторая глава завершена. Пейн ушёл в миры, где время идёт иначе, оставив Машрума одного. Вторая часть кода готова и успешно работает на твоём сайте!",
                 bg: "https://unsplash.com",
+                effect: "none",
                 choices: [
                     { text: "Играть Главу 2 заново", nextScene: "start" }
                 ]
@@ -329,7 +339,7 @@
 
         function typeWriter(text, i, fnCallback) {
             if (i < text.length) {
-                document.getElementById('text').innerHTML = text.substring(0, i+1) + '<span aria-hidden="true"></span>';
+                document.getElementById('text').innerHTML = text.substring(0, i+1);
                 currentTimeout = setTimeout(function() {
                     typeWriter(text, i + 1, fnCallback)
                 }, 15);
@@ -344,7 +354,7 @@
             if (!scene) return;
 
             document.getElementById('speaker-name').innerText = scene.speaker;
-            document.body.style.backgroundImage = `url('${scene.bg}')`;
+            document.body.style.backgroundImage = "url('" + scene.bg + "')";
 
             document.body.className = '';
             if (scene.effect === "portal") {
@@ -355,16 +365,18 @@
             buttonsContainer.innerHTML = ''; 
 
             typeWriter(scene.text, 0, function() {
-                scene.choices.forEach(choice => {
+                scene.choices.forEach(function(choice) {
                     const btn = document.createElement('button');
                     btn.innerText = choice.text;
-                    btn.onclick = () => showScene(choice.nextScene);
+                    btn.onclick = function() { showScene(choice.nextScene); };
                     buttonsContainer.appendChild(btn);
                 });
             });
         }
 
-        showScene('start');
+        window.onload = function() {
+            showScene('start');
+        };
     </script>
 </body>
 </html>
@@ -399,7 +411,6 @@
             flex-direction: column;
             justify-content: space-between;
             box-shadow: 0 -10px 40px rgba(0,0,0,0.9);
-            z-index: 10;
         }
         #speaker-name {
             font-size: 16px;
@@ -447,60 +458,63 @@
     <div id="game-container">
         <div>
             <div id="speaker-name">Загрузка...</div>
-            <div id="text"></div>
+            <div id="text">...</div>
         </div>
         <div id="buttons"></div>
     </div>
 
     <script>
         const story = {
-            start: {
+            "start": {
                 speaker: "Глава 3: Путь Пейна",
-                text: "Пока во вселенной Машрума проходит всего 2 года (ему становится 17), Пейн в других мирах проживает целых 13 лет. К 28 годам он становится величайшим мафиози в мультивселенной, совершая наглые ограбления и убийства. Но криминальная роскошь обрывается внезапно — Пейн погибает от передозировки. Его душа падает в Ад.",
+                text: "Пока во вселенной Машрума проходит всего 2 года (ему становится 17), Пейн в других мирах проживает целых 13 лет. К 28 годам он становится лучшим мафиози в мультивселенной, сея хаос и грабежи. Но роскошная жизнь обрывается внезапно — Пейн погибает от передозировки. Его эгоистичная душа падает на самое дно Ада.",
                 bg: "https://unsplash.com",
+                effect: "none",
                 choices: [
                     { text: "Очнуться в Аду", nextScene: "hell_arrival" }
                 ]
             },
-            hell_arrival: {
+            "hell_arrival": {
                 speaker: "Пейн (28 лет)",
-                text: "Пейн открывает глаза в Преисподней. Он стал обычным, слабым демоном, но его гордость не сломлена. Он начинает жестокую войну — режет местных демонов одного за другим и пожирает их силу, стремительно развивая свою мощь. Вскоре этот кровавый хаос замечает сам Люцифер...",
+                text: "Пейн открывает глаза в Преисподней. Он стал обычным, слабым демоном, но его гордость никуда не делась. Сдаваться он не намерен. Пейн начинает охоту — он режет местных демонов одного за другим, забирая и впитывая их силу, становясь монструозно могущественным. Вскоре этот кровавый след замечает сам Люцифер...",
                 bg: "https://unsplash.com",
                 effect: "hell",
                 choices: [
-                    { text: "Встретиться с Владыкой Ада", nextScene: "lucifer_deal" }
+                    { text: "Предстать перед Люцифером", nextScene: "lucifer_deal" }
                 ]
             },
-            lucifer_deal: {
+            "lucifer_deal": {
                 speaker: "Люцифер",
-                text: "Пораженный аномальной силой Пейна, Люцифер берет его в ученики, думая использовать как личное оружие. Пейн соглашается. Но это лишь план — Пейн хочет втереться в доверие, подобраться поближе и незаметно похитить всю силу дьявола, чтобы самому занять его трон.",
+                text: "Владыка Ада, пораженный силой Пейна, решает взять его в ученики, планируя использовать его в своих целях. Пейн соглашается. Но это лишь уловка — Пейн решает подчиниться Люцифера только для того, чтобы подобраться поближе, превзойти его и незаметно украсть всю его дьявольскую силу.",
                 bg: "https://unsplash.com",
                 effect: "hell",
                 choices: [
-                    { text: "Попытаться убить Люцифера", nextScene: "lucifer_betrayal" }
+                    { text: "Нанести удар Люциферу", nextScene: "lucifer_betrayal" }
                 ]
             },
-            lucifer_betrayal: {
-                speaker: "Побег из Ада",
-                text: "Пейн нападает, но Люцифер успевает среагировать. В диком испуге дьявол приказывает охране уничтожить наглеца. Пейн трусит и бросается в бега, не зная, что ОН УЖЕ СИЛЬНЕЕ ЛЮЦИФЕРА. Спасая свою шкуру, он открывает портал и на полной скорости прыгает в случайный мир...",
+            "lucifer_betrayal": {
+                speaker: "Предательство",
+                text: "Выбрав момент, Пейн нападает на Люцифера. Но Владыка Ада успевает среагировать и в ужасе приказывает всей своей охране уничтожить предателя. Пейн пугается масштабной облавы и бросается в бега. Он ещё не осознает, что на самом деле ЕГО СИЛА УЖЕ ПРЕВОСХОДИТ ЛЮЦИФЕРА... Используя остатки портальных сил, Пейн в панике прыгает во случайную вселенную.",
                 bg: "https://unsplash.com",
                 effect: "hell",
                 choices: [
-                    { text: "Вылететь из портала", nextScene: "scientist_lab" }
+                    { text: "Вырваться из Ада", nextScene: "scientist_lab" }
                 ]
             },
-            scientist_lab: {
+            "scientist_lab": {
                 speaker: "СССР. Лаборатория Аплэна",
-                text: "Пейн на бешеной скорости вылетает из портала и с размаху врезается в ученого Аплэна — лучшего гения этой вселенной. Аплэн в этот момент держал секретную сыворотку яблока, превращающую объекты в плоды. Колба разбивается, заливая их обоих жидкостью. Из-за побочного эффекта тело Пейна распадается, но его душа намертво перемещается в Аплэна!",
+                text: "Пейн на бешеной скорости вылетает из портала и со всего размаху врезается в советского ученого Аплэна. Аплэн — гений этой вселенной, прямо сейчас держал в руках колбу со своей секретной «сывороткой яблока», превращающей всё живое в плоды. От удара колба разбивается, заливая их обоих жидкостью... Их души и тела начинают меняться.",
                 bg: "https://unsplash.com",
+                effect: "none",
                 choices: [
-                    { text: "Конец Третьей Главы", nextScene: "end_chapter_3" }
+                    { text: "Конец Главы 3. Ждать продолжения...", nextScene: "end" }
                 ]
             },
-            end_chapter_3: {
+            "end": {
                 speaker: "Система",
-                text: "Третья глава завершена. Пейн и Аплэн слились в одно существо: полудемона, получеловека, полуяблоко. Готов перейти к финальной Четвертой Главе, где столкнутся все герои, а Тьма сотрет вселенную?",
+                text: "Третья глава завершена! Пейн врезался в Аплэна, и сыворотка яблока запущена. Третья часть кода успешно сохранена и готова к тестам!",
                 bg: "https://unsplash.com",
+                effect: "none",
                 choices: [
                     { text: "Играть Главу 3 заново", nextScene: "start" }
                 ]
@@ -511,7 +525,7 @@
 
         function typeWriter(text, i, fnCallback) {
             if (i < text.length) {
-                document.getElementById('text').innerHTML = text.substring(0, i+1) + '<span aria-hidden="true"></span>';
+                document.getElementById('text').innerHTML = text.substring(0, i+1);
                 currentTimeout = setTimeout(function() {
                     typeWriter(text, i + 1, fnCallback)
                 }, 15);
@@ -526,7 +540,7 @@
             if (!scene) return;
 
             document.getElementById('speaker-name').innerText = scene.speaker;
-            document.body.style.backgroundImage = `url('${scene.bg}')`;
+            document.body.style.backgroundImage = "url('" + scene.bg + "')";
 
             document.body.className = '';
             if (scene.effect === "hell") {
@@ -537,16 +551,18 @@
             buttonsContainer.innerHTML = ''; 
 
             typeWriter(scene.text, 0, function() {
-                scene.choices.forEach(choice => {
+                scene.choices.forEach(function(choice) {
                     const btn = document.createElement('button');
                     btn.innerText = choice.text;
-                    btn.onclick = () => showScene(choice.nextScene);
+                    btn.onclick = function() { showScene(choice.nextScene); };
                     buttonsContainer.appendChild(btn);
                 });
             });
         }
 
-        showScene('start');
+        window.onload = function() {
+            showScene('start');
+        };
     </script>
 </body>
 </html>
@@ -581,7 +597,6 @@
             flex-direction: column;
             justify-content: space-between;
             box-shadow: 0 -10px 40px rgba(0,0,0,0.9);
-            z-index: 10;
         }
         #speaker-name {
             font-size: 16px;
@@ -632,53 +647,56 @@
     <div id="game-container">
         <div>
             <div id="speaker-name">Загрузка...</div>
-            <div id="text"></div>
+            <div id="text">...</div>
         </div>
         <div id="buttons"></div>
     </div>
 
     <script>
         const story = {
-            start: {
+            "start": {
                 speaker: "Глава 4: Борьба за контроль",
-                text: "Две души заперты в одном теле. Когда Аплэн засыпает, Пейн перехватывает контроль над его руками и ногами, хаотично прыгая по мультивселенной. Они не могут ужиться. Наконец, Аплэн конструирует уникальную технологичную маску. Она намертво подавляет сознание Пейна и позволяет ученому использовать его демонические силы для осознанных путешествий между мирами.",
+                text: "Из-за побочного эффекта сыворотки тело Пейна распалось, а его душа вплавилась в Аплэна. Две личности заперты в одном теле. Когда Аплэн засыпает, Пейн перехватывает контроль, хаотично прыгая по мультивселенной. Наконец, Аплэн конструирует уникальную маску. Она намертво подавляет Пейна и позволяет ученому использовать его демонические силы для путешествий между мирами.",
                 bg: "https://unsplash.com",
+                effect: "none",
                 choices: [
-                    { text: "Надеть маску и бросить всё", nextScene: "aplane_travel" }
+                    { text: "Надеть маску и отправиться в путь", nextScene: "aplane_travel" }
                 ]
             },
-            aplane_travel: {
+            "aplane_travel": {
                 speaker: "Аплэн (Человек-Яблоко)",
-                text: "Аплэн бросает свою старую советскую лабораторию. Он отправляется исследовать изнанку реальности, даже не догадываясь, что Тьма из будущего уже заразил всю мультивселенную парадоксами. По первоначальному таймлайну Аплэн должен был создать Тьму только через 20 лет, но вмешательство изменило абсолютно всё...",
+                text: "Аплэн бросает свою советскую лабораторию и отправляется исследовать изнанку реальности, даже не догадываясь, что Тьма из будущего уже заразил всю мультивселенную парадоксами. По первоначальному таймлайну Аплэн должен был создать Тьму только через 20 лет, но вмешательство изменило абсолютно всё...",
                 bg: "https://unsplash.com",
                 effect: "aplane",
                 choices: [
-                    { text: "Перенестись на Землю к Машруму", nextScene: "final_meeting" }
+                    { text: "Перенестись к Машруму", nextScene: "final_meeting" }
                 ]
             },
-            final_meeting: {
+            "final_meeting": {
                 speaker: "Великое столкновение",
-                text: "Вселенные сжимаются. В одной точке сталкиваются все: 17-летний оригинальный Машрум и Аплэн, внутри которого заперт Пейн. В этот же миг просыпается Тьма, который тысячи лет спал в теле Аплэна, чтобы не портить хрупкие нити времени. Таймлайн окончательно разрушен: Пейна не должно было существовать, Аплэн не должен был стать полуяблоком-полудемоном.",
+                text: "Вселенные сжимаются. В одной точке сталкиваются все: 17-летний оригинальный Машрум и Аплэн, внутри которого заперт Пейн. В этот же миг просыпается Тьма, который спал тысячи лет, чтобы не портить нити времени. Таймлайн разрушен: Пейна не должно было существовать, Аплэн не должен был стать полуяблоком.",
                 bg: "https://unsplash.com",
+                effect: "none",
                 choices: [
                     { text: "Тьма принимает решение...", nextScene: "universe_destruction" }
                 ]
             },
-            universe_destruction: {
+            "universe_destruction": {
                 speaker: "Тьма",
-                text: "В этой вселенной находится альтернативная, копия-версия Машрума, чье существование грозит стереть оригинал. Тьма раскрывает свои белые глаза на полную мощность. Реальность начинает трещать и осыпаться пеплом. Чтобы защитить своего истинного создателя — 17-летнего оригинального Машрума — Тьма стирает всю эту альтернативную вселенную целиком.",
+                text: "В этой вселенной находится альтернативная версия Машрума, чье существование грозит стереть оригинал. Тьма раскрывает свои белые глаза на полную мощность. Реальность начинает трещать. Чтобы защитить своего истинного создателя — 17-летнего оригинального Машрума — Тьма полностью стирает эту альтернативную вселенную.",
                 bg: "https://unsplash.com",
                 effect: "void",
                 choices: [
                     { text: "Взглянуть в пустоту", nextScene: "the_end" }
                 ]
             },
-            the_end: {
+            "the_end": {
                 speaker: "Парадокс Машрума",
                 text: "Вселенная стерта. Осталась лишь пустота, Машрум и Тьма, запертые в бесконечной временной петле. Круг замкнулся. Спасибо, что прошли эту историю!",
                 bg: "https://unsplash.com",
+                effect: "none",
                 choices: [
-                    { text: "Вернуться в меню", nextScene: "start" }
+                    { text: "Вернуться в начало финала", nextScene: "start" }
                 ]
             }
         };
@@ -687,7 +705,7 @@
 
         function typeWriter(text, i, fnCallback) {
             if (i < text.length) {
-                document.getElementById('text').innerHTML = text.substring(0, i+1) + '<span aria-hidden="true"></span>';
+                document.getElementById('text').innerHTML = text.substring(0, i+1);
                 currentTimeout = setTimeout(function() {
                     typeWriter(text, i + 1, fnCallback)
                 }, 15);
@@ -702,7 +720,7 @@
             if (!scene) return;
 
             document.getElementById('speaker-name').innerText = scene.speaker;
-            document.body.style.backgroundImage = `url('${scene.bg}')`;
+            document.body.style.backgroundImage = "url('" + scene.bg + "')";
 
             document.body.className = '';
             if (scene.effect === "aplane") {
@@ -715,16 +733,18 @@
             buttonsContainer.innerHTML = ''; 
 
             typeWriter(scene.text, 0, function() {
-                scene.choices.forEach(choice => {
+                scene.choices.forEach(function(choice) {
                     const btn = document.createElement('button');
                     btn.innerText = choice.text;
-                    btn.onclick = () => showScene(choice.nextScene);
+                    btn.onclick = function() { showScene(choice.nextScene); };
                     buttonsContainer.appendChild(btn);
                 });
             });
         }
 
-        showScene('start');
+        window.onload = function() {
+            showScene('start');
+        };
     </script>
 </body>
 </html>
