@@ -1,106 +1,114 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ошибка, совершённая карандашом</title>
-    <script src="media.js"></script>
     <style>
         * { -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; box-sizing: border-box; }
-        body { margin: 0; padding: 0; background: #050507; color: #ffffff; font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; overflow: hidden; position: relative; }
+        body { margin: 0; padding: 0; background: #030305; color: #ffffff; font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; overflow: hidden; position: relative; }
         #bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100vh; background-size: cover; background-position: center; transition: background-image 0.8s ease-in-out, filter 0.5s ease; z-index: 1; }
-        #menu-container, #extra-container { text-align: center; background: rgba(7, 7, 9, 0.96); padding: 20px; border: 2px solid #6b21a8; border-radius: 12px; box-shadow: 0 0 30px rgba(107, 33, 168, 0.4); width: 450px; z-index: 50; position: relative; max-height: 90vh; overflow-y: auto; display: none; }
+        
+        /* КРАСИВОЕ СТЕКЛЯННОЕ МЕНЮ С НЕОНОВОЙ ПОДСВЕТКОЙ (GLASSMORPHISM) */
+        #menu-container, #extra-container { 
+            text-align: center; 
+            background: rgba(12, 10, 16, 0.82); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 30px 25px; 
+            border: 2px solid #a855f7; 
+            border-radius: 16px; 
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.4), inset 0 0 15px rgba(168, 85, 247, 0.2); 
+            width: 460px; 
+            z-index: 50; 
+            position: relative; 
+            max-height: 92vh; 
+            overflow-y: auto; 
+            display: none;
+            animation: menuFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
         #menu-container { display: block; }
-        h1, h2 { font-size: 18px; color: #c084fc; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; line-height: 1.5; text-shadow: 0 0 10px rgba(192, 132, 252, 0.5); }
-        h2 { font-size: 14px; margin-top: 5px; margin-bottom: 12px; }
+        
+        @keyframes menuFadeIn {
+            from { opacity: 0; transform: scale(0.96) translateY(8px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        h1 { 
+            font-size: 21px; 
+            color: #e9d5ff; 
+            margin-bottom: 25px; 
+            text-transform: uppercase; 
+            letter-spacing: 3px; 
+            line-height: 1.4; 
+            text-shadow: 0 0 12px rgba(168, 85, 247, 0.6), 0 0 20px rgba(168, 85, 247, 0.3); 
+        }
+        h2 { 
+            font-size: 14px; 
+            color: #c084fc;
+            margin-top: 5px; 
+            margin-bottom: 15px; 
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
+        }
+        
         #game-container { display: none; width: 100%; height: 100vh; flex-direction: column; justify-content: flex-end; position: relative; z-index: 10; }
         #chapter-title-screen { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100vh; background: #050507; z-index: 150; justify-content: center; align-items: center; cursor: pointer; text-align: center; padding: 20px; }
         #chapter-title-text { font-size: 22px; color: #c084fc; text-transform: uppercase; letter-spacing: 3px; font-weight: bold; text-shadow: 0 0 15px rgba(192, 132, 252, 0.6); line-height: 1.6; }
         #top-bar { position: fixed; top: 12px; right: 20px; display: flex; gap: 10px; z-index: 100; }
-        .save-btn { background: #111115 !important; border: 1px solid #4c1d95 !important; padding: 6px 14px !important; font-size: 13px !important; border-radius: 6px !important; text-shadow: none !important; color: white; cursor: pointer; transition: 0.3s; }
-        .save-btn:hover { background: #581c87 !important; border-color: #c084fc !important; box-shadow: 0 0 10px rgba(192, 132, 252, 0.4); }
+        
+        /* ИГРОВЫЕ КНОПКИ ВЕРХНЕЙ ПАНЕЛИ */
+        .save-btn { background: rgba(20, 16, 28, 0.75) !important; border: 1px solid #6b21a8 !important; padding: 7px 16px !important; font-size: 13px !important; border-radius: 8px !important; text-shadow: none !important; color: #e9d5ff; cursor: pointer; transition: all 0.25s ease; backdrop-filter: blur(4px); }
+        .save-btn:hover { background: #581c87 !important; border-color: #c084fc !important; box-shadow: 0 0 12px rgba(168, 85, 247, 0.5); transform: translateY(-1px); }
         .skip-active { background: #a855f7 !important; border-color: #c084fc !important; animation: blink 0.8s infinite; }
+        
         #sprite-left-container, #sprite-right-container { position: absolute; bottom: 30vh; width: 42%; height: 60vh; z-index: 5; display: flex; gap: 15px; align-items: flex-end; pointer-events: none; transition: filter 0.4s ease, opacity 0.4s ease; }
         #sprite-left-container { left: 4%; justify-content: flex-start; }
         #sprite-right-container { right: 4%; justify-content: flex-end; }
-        
-        /* ИСПРАВЛЕННОЕ ОКНО СКАЛИРОВАНИЯ И КОМПЕНСАЦИИ СДВИГОВ ХУДОЖНИКА */
         .sprite-window { width: 230px; height: 280px; overflow: hidden; position: relative; flex-shrink: 0; transition: filter 0.4s ease, opacity 0.4s ease; background: transparent !important; display: flex; justify-content: center; align-items: center; border-radius: 8px; }
         .character-sprite-img { position: absolute; max-width: none !important; max-height: none !important; mix-blend-mode: multiply; background: transparent !important; transform-origin: center; }
+        .inactive-speaker { filter: brightness(0.22) grayscale(0.4) saturate(0.6); opacity: 0.35; }
         
-        .inactive-speaker { filter: brightness(0.22) grayscale(0.5) saturate(0.6); opacity: 0.35; }
-        #story-window { background: rgba(7, 7, 9, 0.94); padding: 15px 35px; border-top: 4px solid #6b21a8; min-height: 30vh; box-shadow: 0 -10px 40px rgba(0,0,0,0.9); z-index: 110; display: flex; flex-direction: column; justify-content: space-between; width: 100%; cursor: pointer; position: relative; }
-        #speaker-name { font-size: 15px; color: #c084fc; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px; font-weight: bold; }
-        #text { font-size: 17px; line-height: 1.5; margin-bottom: 8px; color: #e4e4e7; min-height: 3em; }
-        #click-hint { font-size: 11px; color: #a855f7; text-align: right; opacity: 0.6; margin-top: -5px; animation: blink 1.5s infinite; }
-        .buttons-list { display: flex; flex-direction: column; gap: 10px; width: 100%; }
-        button { background: #111115 !important; color: #f4f4f5 !important; border: 1px solid #4c1d95 !important; padding: 12px; font-size: 15px; border-radius: 6px; cursor: pointer; text-align: center; transition: all 0.3s ease; text-shadow: none !important; opacity: 1 !important; }
-        button:hover:not(:disabled) { background: #581c87 !important; border-color: #c084fc !important; transform: scale(1.02); box-shadow: 0 0 15px rgba(192, 132, 252, 0.4); }
-        button:disabled { background: #09090b !important; color: #52525b !important; border-color: #1c1917 !important; cursor: not-allowed; opacity: 0.3 !important; }
+        /* ДИАЛОГОВОЕ ОКНО В СТИЛЕ СОВРЕМЕННЫХ НОВЕЛЛ */
+        #story-window { background: rgba(9, 7, 14, 0.95); padding: 18px 40px; border-top: 4px solid #a855f7; min-height: 28vh; box-shadow: 0 -12px 45px rgba(0,0,0,0.95); z-index: 110; display: flex; flex-direction: column; justify-content: space-between; width: 100%; cursor: pointer; position: relative; backdrop-filter: blur(6px); }
+        #speaker-name { font-size: 15px; color: #d8b4fe; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; font-weight: bold; text-shadow: 0 0 6px rgba(168, 85, 247, 0.4); }
+        #text { font-size: 17px; line-height: 1.55; margin-bottom: 8px; color: #f4f4f5; min-height: 3em; }
+        #click-hint { font-size: 11px; color: #c084fc; text-align: right; opacity: 0.6; margin-top: -5px; animation: blink 1.5s infinite; }
+        
+        .buttons-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+        
+        /* КНОПКИ МЕНЮ: ЭФФЕКТ СВЕЧЕНИЯ И ПЛАВНОГО РАСШИРЕНИЯ ПРИ НАВЕДЕНИИ */
+        button { 
+            background: linear-gradient(135deg, rgba(24, 18, 36, 0.9), rgba(15, 12, 22, 0.95)) !important; 
+            color: #f4f4f5 !important; 
+            border: 1px solid #7c3aed !important; 
+            padding: 14px; 
+            font-size: 15px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            text-align: center; 
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+            text-shadow: none !important; 
+            opacity: 1 !important; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        button:hover:not(:disabled) { 
+            background: linear-gradient(135deg, #5b21b6, #4c1d95) !important; 
+            border-color: #c084fc !important; 
+            transform: scale(1.025); 
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.6); 
+        }
+        button:disabled { background: #09090b !important; color: #4b5563 !important; border-color: #1f2937 !important; cursor: not-allowed; opacity: 0.35 !important; box-shadow: none; }
+        
         #choices-overlay { width: 100%; padding: 0 25px; margin-bottom: 12px; z-index: 120; display: flex; flex-direction: column; gap: 10px; position: relative; }
-        #choices-overlay button { text-align: left; padding: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        #choices-overlay button:hover { transform: translateX(5px); }
-        .extra-section { background: #111115; border: 1px solid #4c1d95; padding: 12px; border-radius: 8px; margin-bottom: 12px; text-align: left; }
-        .extra-section h3 { color: #c084fc; font-size: 13px; margin-top: 0; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-        .archive-text { font-size: 12px; line-height: 1.5; color: #d4d4d8; text-align: justify; display: none; margin-top: 8px; border-top: 1px dashed #4c1d95; padding-top: 8px; }
-        .gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
-        .gallery-item { background: #09090b; border: 1px dashed #4c1d95; aspect-ratio: 1; display: flex; justify-content: center; align-items: center; font-size: 11px; color: #52525b; border-radius: 4px; text-align: center; padding: 4px; box-sizing: border-box; }
-        .unlocked { border-style: solid; border-color: #a855f7; color: #e4e4e7; background: #2e1065 !important; }
+        #choices-overlay button { text-align: left; padding: 15px; box-shadow: 0 6px 20px rgba(0,0,0,0.6); border-left: 3px solid #7c3aed; }
+        #choices-overlay button:hover { transform: translateX(6px); border-left-color: #c084fc; }
+        
+        /* СТИЛИ ОФОРМЛЕНИЯ РЕЖИМА ЭКСТРА */
+        .extra-section { background: rgba(20, 16, 28, 0.5); border: 1px solid #6b21a8; padding: 14px; border-radius: 10px; margin-bottom: 14px; text-align: left; }
+        .extra-section h3 { color: #d8b4fe; font-size: 13px; margin-top: 0; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 0 6px rgba(168, 85, 247, 0.3); }
+        .archive-text { font-size: 12px; line-height: 1.6; color: #e4e4e7; text-align: justify; display: none; margin-top: 10px; border-top: 1px dashed #6b21a8; padding-top: 10px; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+        .gallery-item { background: rgba(10, 8, 14, 0.6); border: 1px dashed #5b21b6; aspect-ratio: 1.1; display: flex; justify-content: center; align-items: center; font-size: 11px; color: #6b7280; border-radius: 6px; text-align: center; padding: 6px; box-sizing: border-box; transition: all 0.2s ease; }
+        .unlocked { border-style: solid; border-color: #a855f7; color: #f3e8ff; background: linear-gradient(135deg, #3b0764, #1e1b4b) !important; box-shadow: inset 0 0 10px rgba(168, 85, 247, 0.3); }
+        .unlocked:hover { transform: translateY(-2px); box-shadow: 0 0 15px rgba(168, 85, 247, 0.5); }
         @keyframes blink { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.8; } }
-    </style>
-</head>
-<body>
-    <div id="bg-layer"></div>
-    <div id="custom-alert">💾 Путь сохранён в памяти...</div>
-    <div id="menu-container">
-        <h1>Ошибка,<br>совершённая карандашом</h1>
-        <div class="buttons-list" id="menu-buttons"></div>
-    </div>
-    <div id="extra-container">
-        <h2>Режим ЭКСТРА</h2>
-        <div class="extra-section">
-            <h3>📂 Досье: Комплекс ПейнЙосев</h3>
-            <button id="archive-lock-btn" style="padding: 8px 12px; font-size: 11px; width: 100%;" disabled>🔒 Заблокировано</button>
-            <div id="archive-content" class="archive-text">
-                <strong>[ВЫРЕЗКА ИЗ СЕКРЕТНЫХ ОТЧЁТОВ]:</strong> Подземный комплекс научно-исследовательских аномалий изначально проектировался двумя независимыми группами учёных. Кодовое название <strong>«ПейнЙосев»</strong> никогда не расшифровывалось проекту. <br><br>
-                Однако архивные метрики прямо указывают на скрытую связь с именами двух основательниц, чьи фамилии и отчества вплелись в саму ткань проекта: <strong>Pains Ева Йосевна</strong> и <strong>Uplands Акуран Кремовна</strong>. <br><br>
-                Организация создана на пересечении их личных вселенных, где советская сыворотка Uplands и порталы Pains образовали временной парадокс. Намёки ведут к их тёмному прошлому...
-            </div>
-        </div>
-        <div class="extra-section">
-            <h3>🎨 Галерея наработок</h3>
-            <div class="gallery-grid">
-                <div id="gallery-1" class="gallery-item">🔒<br>Основная концовка</div>
-                <div id="gallery-2" class="gallery-item">🔒<br>Альтернативная концовка</div>
-                <div id="gallery-3" class="gallery-item">🔒<br>Шуточная концовка</div>
-                <div id="gallery-4" class="gallery-item">🔒<br>Все руты Пейна</div>
-            </div>
-        </div>
-        <button style="border-color: #ef4444; width: 100%; padding: 12px;" onclick="exitExtraMenu()">🚪 Назад в меню</button>
-    </div>
-    <div id="game-container">
-        <div id="chapter-title-screen" onclick="hideChapterTitle()">
-            <div id="chapter-title-text"></div>
-        </div>
-        <div id="top-bar">
-            <button id="skip-btn" class="save-btn" onclick="toggleSkip(event)">⏩ Пропуск</button>
-            <button class="save-btn" onclick="saveCurrentGame(event)">💾 Сохранить</button>
-            <button class="save-btn" style="border-color: #ef4444" onclick="showMainMenu(event)">🚪 Меню</button>
-        </div>
-        <div id="choices-overlay" onclick="event.stopPropagation()"></div>
-        <div id="sprite-left-container"></div>
-        <div id="sprite-right-container"></div>
-        <div id="story-window" onclick="advanceStory()">
-            <div>
-                <div id="speaker-name">Загрузка...</div>
-                <div id="text">...</div>
-            </div>
-            <div id="click-hint">▼ Нажмите на экран для продолжения</div>
-        </div>
-    </div>
-    <script>
-        let isSkipMode = false;
-        const allChapters = {            1: {
+    </style>            1: {
                 title: "Глава 1:\nИстоки Парадокса",
                 dialogues: [
                     { speaker: "Мысли Машрума", text: "Мне всего шесть лет... Я сижу на холодном полу пустого, давно заброшенного дома. Ободранные стены вокруг кажутся мне чужими, огромными и враждебными.", bg: visualAssets.backgrounds.room, sprite: visualAssets.sprites.mashrum_6, sX: 0, sY: 0 },
