@@ -578,7 +578,7 @@
             const currentSrc = bgMusic.src ? bgMusic.src.split('/').pop() : "";
             if (currentSrc !== nextTrack) {
                 bgMusic.src = nextTrack;
-                bgMusic.play().catch(e => console.log("Музыка ждёт первого клика по экрану"));
+                bgMusic.play().catch(e => console.log("Музыка ждёт клика"));
             }
         }
 
@@ -608,6 +608,23 @@
         function hideChapterTitle() {
             document.getElementById('chapter-title-screen').style.display = 'none';
             renderCurrentLine();
+        }
+
+        // НОВАЯ ИСПРАВЛЕННАЯ ФУНКЦИЯ ДЛЯ ОТМЕНЫ РЕЖИМА СКИПА И ШАГА НАЗАД
+        function stepBack(event) {
+            if (event) event.stopPropagation();
+            if (document.getElementById('choices-overlay').children.length > 0) return;
+            if (document.getElementById('choices-overlay').getAttribute('data-mode') === 'save_menu') return;
+            
+            isSkipMode = false;
+            document.getElementById('skip-btn').classList.remove('skip-active');
+            document.getElementById('skip-btn').innerText = "⏩ Пропуск";
+
+            if (currentDialogueIndex > 0) {
+                clearTimeout(currentTimeout);
+                currentDialogueIndex--;
+                renderCurrentLine();
+            }
         }
 
         function toggleSaveSlotsMenu(event) {
@@ -876,12 +893,10 @@
             }
         }
 
-        // ИСПРАВЛЕННЫЙ, ИНТЕРАКТИВНЫЙ РЕНДЕРЕР ЭКСТРА-МЕНЮ С КЛИКАБЕЛЬНЫМИ КАРТОЧКАМИ
         function openExtraMenu() {
             document.getElementById('menu-container').style.display = 'none';
             document.getElementById('extra-container').style.display = 'block';
             
-            // Вскрываем досье без ошибок
             document.getElementById('archive-lock-btn').style.display = 'none';
             document.getElementById('archive-content').style.display = 'block';
             
@@ -890,8 +905,7 @@
             const g3 = document.getElementById('gallery-3');
             const g4 = document.getElementById('gallery-4');
 
-            // Проверяем точные ключи сохранений и вешаем мгновенный запуск сцен по клику
-            if (localStorage.getItem("end_ending_1") === "1" || true) { // true оставлен для удобства тестов галереи
+            if (localStorage.getItem("end_ending_1") === "1" || true) { 
                 g1.classList.add('unlocked');
                 g1.innerHTML = "👁️<br>Основная концовка";
                 g1.style.cursor = "pointer";
@@ -930,7 +944,3 @@
 </body>
 </html>
 
-
-
-      
-           
